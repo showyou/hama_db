@@ -10,14 +10,14 @@ import datetime
 import re
 import sys
 from sqlalchemy import and_
-
+import simplejson
 import picklefile
+
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = True
-homepath = "/home/yuki/gitrep/project/hama_db/analyzer/"
 exec_path = "/home/yuki/gitrep/project/hama_db/"
-conf_path = exec_path+"./config.json"
+conf_path = exec_path+"config.json"
 
 dbSession = None
 regOhayou = re.compile(u'おはよう')
@@ -30,20 +30,21 @@ regAthama = re.compile(u'(@yuka_|@ゆーか|@ゆうか)(.*)')
 
 
 def LoadUserData(fileName):
-    #ファイルを開いて、データを読み込んで変換する
-    #データ形式は(user,password)
-    try:
-        file = open(fileName,'r')
-        a = simplejson.loads(file.read())
-        file.close()
-    except:
-        sys.exit(1)
-    return a
+	#ファイルを開いて、データを読み込んで変換する
+ 	#データ形式は(user,password)
+	try:
+		file = open(fileName,'r')
+		a = simplejson.loads(file.read())
+		file.close()
+	except:
+		print ("IO Error",fileName)
+		sys.exit(1)
+	return a
 
 def quickAnalyze():
 	# dbからデータを読み込む
 	u = LoadUserData(conf_path)
-	dbSession = model.startSession()
+	dbSession = model.startSession(u)
 	# 前回の更新時間から現在までのデータを入手する
 
 	q = dbSession.query(model.Twit)
@@ -51,7 +52,7 @@ def quickAnalyze():
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
-		#print_d2(t.text)
+		print (t.text)
 		AnalyzeReply(t,dbSession)
 		t.isAnalyze = True
 		#dbSession.save(t)
