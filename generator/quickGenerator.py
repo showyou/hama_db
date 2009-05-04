@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 exec_path = "/home/yuki/gitrep/project/hama_db/"
+g_twitterPath = exec_path+"/generator/.user/twdata"
 conf_path = exec_path+"./config.json"
 
 import sys
@@ -46,7 +47,7 @@ def LoadUserData(fileName):
 
 # Twitterにメッセージ投げる
 def SendMessage(str):
-    userData = LoadUserData(conf_path)
+    userData = LoadUserData(g_twitterPath)
     tw = twitterscraping.Twitter(userData)
     str = string.replace(str,'yystart','')
     

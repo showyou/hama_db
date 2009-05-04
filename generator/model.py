@@ -63,15 +63,6 @@ hot = Table("hot",metadata,
 				mysql_charset = 'utf8'
 			)
 
-twit = Table("twit",metadata,
-				Column('id', types.Integer, primary_key=True),
-				Column('user', types.Unicode(32)),
-				Column('text', types.Unicode(140)),
-				Column('datetime', types.DateTime, default=datetime.now),
-				mysql_engine = 'MyISAM',
-				mysql_charset = 'utf8'
-			)
-
 collocation = Table("collocation",metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('a',  types.Unicode(32)),
@@ -96,7 +87,6 @@ def startSession(conf):
 					)
 				)
 
-	mapper(Twit, twit)
 	mapper(Hot,  hot)
 	mapper(Markov,markovOneColumn)
 	mapper(RetQueue, retQueue)

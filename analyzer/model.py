@@ -69,7 +69,7 @@ twit = Table("twit",metadata,
 				Column('user', types.Unicode(32)),
 				Column('text', types.Unicode(140)),
 				Column('datetime', types.DateTime, default=datetime.now),
-				Column('isAnalyze', types.Boolean, default=False),
+				Column('isAnalyze', types.SmallInteger, default=False),
 				mysql_engine = 'MyISAM',
 				mysql_charset = 'utf8'
 			)

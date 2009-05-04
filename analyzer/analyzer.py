@@ -35,11 +35,12 @@ def analyze():
 	dbSession = model.startSession(userdata)
 	# 前回の更新時間から現在までのデータを入手する
 	q = dbSession.query(model.Twit)
-	tq = q.filter(model.Twit.isAnalyze == False) 
+	tq = q.filter(model.Twit.isAnalyze == 1) 
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
-		t_enc = t.text.encode(g_mecabencode)
+		t.isAnalyze = 2
+		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
 		sarray2 = connectUnderScore(sarray)
 		markovWordList,topNWordList = TakeWordList(sarray)
@@ -49,6 +50,7 @@ def analyze():
 			hot = model.Hot()
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
+		#dbSession.save(t)
 		dbSession.commit()
 		
 		AppendMarkov(markovWordList,dbSession)
