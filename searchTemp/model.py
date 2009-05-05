@@ -22,9 +22,10 @@ markovOneColumn = Table("markovVsearchTemp",metadata,
 					mysql_charset= 'utf8'
 					)
 
-def startSession():
+def startSession(conf):
+
 	config = {"sqlalchemy.url":
-			"mysql://hoge:hoge@192.168.41.60/px-test"	}
+			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]}
 	engine = sqlalchemy.engine_from_config(config)
 
 	dbSession = scoped_session(
