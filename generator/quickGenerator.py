@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/gitrep/project/hama_db/"
-g_twitterPath = exec_path+"/generator/.user/twdata"
+exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
 import sys
