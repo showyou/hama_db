@@ -3,11 +3,6 @@
 
 #sqlalchemyで深さ優先探索
 import model
-<<<<<<< HEAD:searchTemp/vsearch.py
-
-def depthFirstSearch():
-	session = model.startSession()
-=======
 import simplejson
 
 exec_path = "/home/yuki/public_git/hama_db/"
@@ -23,7 +18,6 @@ def getAuthData(fileName):
 def depthFirstSearch():
 	u = getAuthData(conf_path) 
 	session = model.startSession(u)
->>>>>>> a1608d1e907a6c03f0f5132705df0d50b5898ec9:searchTemp/vsearch.py
 	q = session.query(model.Markov)
 	node = {"text":u"A","visit":False}
 	stack =[] 
