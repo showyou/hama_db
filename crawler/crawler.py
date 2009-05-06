@@ -40,9 +40,9 @@ for td in l:
 	if( query.count() > 0 ): continue
 	t = model.Twit()
 	t.user = td[0]
-	print "pppppp",
-	print td[0]
-	print td[1]
+	#print "pppppp",
+	#print td[0]
+	#print td[1]
 	t.text = td[1]
 	t.datetime = d
 	dbSession.save(t)

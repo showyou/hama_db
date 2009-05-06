@@ -15,7 +15,7 @@ import picklefile
 import simplejson
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
-_debug = True
+_debug = False 
 homepath = "/home/yuki/public_git/hama_db/analyzer/"
 exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
