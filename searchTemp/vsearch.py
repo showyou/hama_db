@@ -5,6 +5,8 @@
 import model
 import simplejson
 
+from shuffleByCount import shuffleByCount
+
 exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
@@ -19,7 +21,7 @@ def depthFirstSearch():
 	u = getAuthData(conf_path) 
 	session = model.startSession(u)
 	q = session.query(model.Markov)
-	node = {"text":u"A","visit":False}
+	node = {"text":u"yystart","visit":False}
 	stack =[] 
 	stack.append(node)
 	while len(stack) != 0:
@@ -34,10 +36,18 @@ def depthFirstSearch():
 				print (node["text"])
 				stack[-1]["visit"] = True	
 				f = q.filter(model.Markov.now==node["text"])
+				# 一旦ランダムに並べ替えたほうがいいかも
+				tmpList = []
 				for fq in f:
-					stack.append({"text":fq.next,"visit":False})
+					tmpList.append({"name":fq.next,"count":fq.count})
+				shuffleList = shuffleByCount(tmpList)
+				for i in shuffleList:
+					stack.append({"text":i["name"],"visit":False})
 
 	print ("ans")
 	for s in stack:
-		if s["visit"] == True: print s
+		if s["visit"] == True: 
+			#print s
+			print s["text"],
+
 depthFirstSearch()	

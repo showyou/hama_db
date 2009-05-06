@@ -13,7 +13,8 @@ class Markov(object):
 
 metadata = sqlalchemy.MetaData()
 
-markovOneColumn = Table("markovVsearchTemp",metadata,
+#markovOneColumn = Table("markovVsearchTemp",metadata,
+markovOneColumn = Table("markov", metadata,
 					Column('id', types.Integer, primary_key=True),
 					Column('now', types.Unicode(32)),
 					Column('next', types.Unicode(32)),
