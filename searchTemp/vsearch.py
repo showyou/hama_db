@@ -17,16 +17,16 @@ def getAuthData(fileName):
 	file.close()
 	return a
 
-def depthFirstSearch():
-	u = getAuthData(conf_path) 
-	session = model.startSession(u)
+def depthFirstSearch(session,startWord,endWord,reverse=False):
+	if reverse: type = model.Markov.next
+	else: type = model.Markov.now	
 	q = session.query(model.Markov)
-	node = {"text":u"yystart","visit":False}
+	node = {"text":startWord,"visit":False}
 	stack =[] 
 	stack.append(node)
 	while len(stack) != 0:
 		node = stack[-1]
-		if node["text"] == u"yyend":
+		if node["text"] == endWord:
 			stack[-1]["visit"] = True
 			break
 		else:
@@ -34,20 +34,29 @@ def depthFirstSearch():
 				stack.pop()
 			else:
 				print (node["text"])
-				stack[-1]["visit"] = True	
-				f = q.filter(model.Markov.now==node["text"])
-				# 一旦ランダムに並べ替えたほうがいいかも
+				stack[-1]["visit"] = True
+				f = q.filter(type==node["text"])
 				tmpList = []
 				for fq in f:
-					tmpList.append({"name":fq.next,"count":fq.count})
+					if reverse:
+						tmpList.append({"name":fq.now,"count":fq.count})
+					else:
+						tmpList.append({"name":fq.next,"count":fq.count})
 				shuffleList = shuffleByCount(tmpList)
 				for i in shuffleList:
 					stack.append({"text":i["name"],"visit":False})
 
 	print ("ans")
+	if reverse : stack.reverse()
 	for s in stack:
 		if s["visit"] == True: 
 			#print s
 			print s["text"],
 
-depthFirstSearch()	
+	print ":"
+if __name__ == "__main__":
+	u = getAuthData(conf_path) 
+	session = model.startSession(u)
+	depthFirstSearch(session,u"yystart",u"yyend",False)
+	depthFirstSearch(session,u"yyend",  u"yystart",True)	
+
