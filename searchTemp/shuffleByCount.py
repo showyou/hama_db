@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #! -*- coding:utf-8 -*-
-
+#test
 def shuffleByCount(list):
 	""" 
 	入力されたリストをアイテムの個数に応じて適当に並べ変えます
