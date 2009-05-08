@@ -33,7 +33,7 @@ def depthFirstSearch(session,startWord,endWord,reverse=False):
 			if node["visit"] == True:
 				stack.pop()
 			else:
-				print (node["text"])
+				#print (node["text"])
 				stack[-1]["visit"] = True
 				f = q.filter(type==node["text"])
 				tmpList = []
@@ -46,7 +46,7 @@ def depthFirstSearch(session,startWord,endWord,reverse=False):
 				for i in shuffleList:
 					stack.append({"text":i["name"],"visit":False})
 
-	print ("ans")
+	#print ("ans")
 	sentence = ""
 	selectwordList = []
 	if reverse : stack.reverse()

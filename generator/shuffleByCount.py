@@ -21,7 +21,7 @@ def shuffleByCount(list):
 		result.append(i)
 		tmpList.remove(i)
 
-	print("ok")
+	#print("ok")
 	return result
 
 # 数量に応じて結果を返す

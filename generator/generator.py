@@ -9,6 +9,7 @@ import sys
 sys.path.insert(0,exec_path)
 
 from common import twitterscraping
+import vsearch
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
 #import scheduler
@@ -37,14 +38,14 @@ def generator():
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
 				str = CreateMarkovSentenceWithHot(dbSession)
 			except:
-				str,sl = PrintForwardMarkovSentence("yystart",dbSession)
+				str,sl = vsearch.depthFirstSearch(dbSession,"yystart","yyend")
 			SendMessage(str)
 
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)
-	fw,sl1 =PrintForwardMarkovSentence(w,session)	# 前方マルコフ
-	bw,sl2 =PrintBackwardMarkovSentence(w,session)# 後方マルコフ
+	fw,sl1 = vsearch.depthFirstSearch(session,w,"yyend")
+	bw,sl2 = vsearch.depthFirstSearch(session,"yystart",w,True)
 	str =bw+fw
 	return str
 
@@ -65,7 +66,7 @@ def SendMessage(str):
 	userData = LoadUserData(conf_path)
 	tw = twitterscraping.Twitter(userData)
 	str = string.replace(str,'yystart','')
-	
+	str = string.replace(str,'yyend','')
 	#print(str)
 	tw.put(str)
 
@@ -159,45 +160,6 @@ def GetQueryByCount(filter):
 	# ここまででresultにはなにか入ってるはず 
 	return result 
 
-#従来の後方マルコフ連鎖
-#要修正
-def PrintForwardMarkovSentence(baseword,session):
-	# マルコフ連鎖で文章作成
-	selectword = baseword
-	sentence = ""
-	selectwordList = []
-	count = 0
-	q = session.query(model.Markov)
-	while True:
-		sentence += selectword
-		count += 1
-		if  30 <= count:
-			break
-		q2 = q.filter(model.Markov.now == selectword)
-		q3 = GetQueryByCount(q2)
-		selectword = q3.next
-		if  selectword == 'yyend':
-			break
-		selectwordList.append(selectword)
-	return sentence,selectwordList
-
-#既定の単語から前方向にマルコフ連鎖する
-#要修正
-def PrintBackwardMarkovSentence(baseword,session):
-	selectword = baseword
-	sentence = ""
-	selectwordList = []
-	q = session.query(model.Markov)
-	while True:
-		q2 = q.filter(model.Markov.next==selectword)
-		q3 = GetQueryByCount(q2)
-		selectword = q3.now
-		if selectword == "yystart":
-			break
-		selectwordList.append(selectword)
-		sentence = selectword + sentence
-
-	return sentence,selectwordList
 
 #session = model.startSession()
 generator()
