@@ -26,6 +26,9 @@ class Hot(object):
 class Collocation(object):
 	pass
 
+class Top10Words(object):
+	pass
+
 metadata = sqlalchemy.MetaData()
 
 ohayouTime = Table("ohayouTime",metadata,
@@ -73,6 +76,16 @@ collocation = Table("collocation",metadata,
 				mysql_charset = 'utf8'
 			)
 
+# hotな単語の中でも上位10個(使われたらused = 1)
+top10words = Table("top10words", metadata,
+				Column('id', types.Integer, primary_key=True),
+				Column('word',  types.Unicode(140)),
+				Column('isSelect', types.Boolean,default=False),
+				Column('datetime',types.DateTime, default=datetime.now),
+				mysql_engine = 'MyISAM',
+				mysql_charset = 'utf8'
+			)
+
 def startSession(conf):
 
 	config = {"sqlalchemy.url":
@@ -92,6 +105,7 @@ def startSession(conf):
 	mapper(RetQueue, retQueue)
 	mapper(OhayouTime, ohayouTime)
 	mapper(Collocation, collocation)
+	mapper(Top10Words, top10words)
 	metadata.create_all(bind=engine)
 	print ("--start DB Session--")
 	return dbSession

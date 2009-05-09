@@ -39,17 +39,18 @@ def analyze():
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
-		t.isAnalyze = 2
+		t.isAnalyze = 3
 		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
 		sarray2 = connectUnderScore(sarray)
 		markovWordList,topNWordList = TakeWordList(sarray)
 		
 		#最近出た名詞貯める
-		for tn in topNWordList:
+		"""for tn in topNWordList:
 			hot = model.Hot()
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
+		"""
 		#dbSession.save(t)
 		dbSession.commit()
 		

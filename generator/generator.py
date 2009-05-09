@@ -34,18 +34,19 @@ def generator():
 		if( reply.count() > 0 ):
 			str = DoReply(reply,dbSession)
 		else:
-			try:
+			#try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
 				str = CreateMarkovSentenceWithHot(dbSession)
-			except:
-				str,sl = vsearch.depthFirstSearch(dbSession,"yystart","yyend")
-			SendMessage(str)
+			#except:
+			#	print "Unexpected error:", sys.exc_info()[0]
+			#	str,sl = vsearch.depthFirstSearch(dbSession,"yystart","yyend",20)
+				SendMessage(str)
 
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)
-	fw,sl1 = vsearch.depthFirstSearch(session,w,"yyend")
-	bw,sl2 = vsearch.depthFirstSearch(session,"yystart",w,True)
+	fw,sl1 = vsearch.depthFirstSearch(session,w,"yyend",10)
+	bw,sl2 = vsearch.depthFirstSearch(session,"yystart",w,10,True)
 	str =bw+fw
 	return str
 
@@ -75,14 +76,17 @@ def SortWordCnt(wordcnt):
     words.sort(key=lambda x: wordcnt[x], reverse=True)
     return words
 
-def TopN(wordcnt,n):
-	wordRank = sortWordCnt(wordcnt)
+def TopN(session, wordcnt,n):
+	wordRank = SortWordCnt(wordcnt)
 	i = 0
 	lst = []
 	for w in wordRank:
 		#print_d(w),
 		#print "x" + str(wordcnt[w])
 		lst.append(w)
+		tw = model.Top10Words()
+		tw.word = w
+		session.save(tw)
 		i+=1
 		if i >= n : break
 	return lst
@@ -101,8 +105,10 @@ def SelectHotWord(session):
 		else:
 			hotWord[h]=1
 
-	hotNArray = TopN(hotWord,10)
+	hotNArray = TopN(session,hotWord,10)
 	w = random.choice(hotNArray)
+	q3 = session.query(model.Top10Words).filter(model.Top10Words.word == w)
+	q3[0].isSelect = True
 	print ("hot"+w)	
 	return w 
 
@@ -121,7 +127,7 @@ def DoReply(reply,session):
 				else:
 					l2num += 1
 					if len(sentence) > 100: break
-			sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー'))
+			sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー',u'おはよー'))
 		elif r.text == 'tadaima':
 			sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
 		elif r.text == 'otukare':
@@ -161,7 +167,5 @@ def GetQueryByCount(filter):
 	return result 
 
 
-#session = model.startSession()
 generator()
-#CreateMarkovSentenceWithHot(session)
 

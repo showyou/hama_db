@@ -7,6 +7,7 @@ import simplejson
 
 from shuffleByCount import shuffleByCount
 
+g_depthMax = 30 # 最大探索深さ(=単語数)
 exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
@@ -17,24 +18,27 @@ def getAuthData(fileName):
 	file.close()
 	return a
 
-def depthFirstSearch(session,startWord,endWord,reverse=False):
+def depthFirstSearch(session,startWord,endWord,depthMax,reverse=False):
 	if reverse: type = model.Markov.next
 	else: type = model.Markov.now	
 	q = session.query(model.Markov)
 	node = {"text":startWord,"visit":False}
 	stack =[] 
 	stack.append(node)
+	depth = 1 # 探索深さ
 	while len(stack) != 0:
 		node = stack[-1]
 		if node["text"] == endWord:
 			stack[-1]["visit"] = True
 			break
 		else:
-			if node["visit"] == True:
+			if node["visit"] == True or depth >= 30:
 				stack.pop()
+				depth -= 1
 			else:
 				#print (node["text"])
 				stack[-1]["visit"] = True
+				depth += 1
 				f = q.filter(type==node["text"])
 				tmpList = []
 				for fq in f:
@@ -61,7 +65,7 @@ def depthFirstSearch(session,startWord,endWord,reverse=False):
 if __name__ == "__main__":
 	u = getAuthData(conf_path) 
 	session = model.startSession(u)
-	fs,sl1 = depthFirstSearch(session,u"yystart",u"yyend",False)
-	bs,sl2 = depthFirstSearch(session,u"yyend",  u"yystart",True)	
+	fs,sl1 = depthFirstSearch(session,u"yystart",u"yyend",g_depthMax,False)
+	bs,sl2 = depthFirstSearch(session,u"yyend",  u"yystart",g_depthMax,True)	
 	print fs
 	print bs
