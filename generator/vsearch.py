@@ -32,7 +32,7 @@ def depthFirstSearch(session,startWord,endWord,depthMax,reverse=False):
 			stack[-1]["visit"] = True
 			break
 		else:
-			if node["visit"] == True or depth >= 30:
+			if node["visit"] == True or depth >= depthMax:
 				stack.pop()
 				depth -= 1
 			else:
@@ -53,7 +53,10 @@ def depthFirstSearch(session,startWord,endWord,depthMax,reverse=False):
 	#print ("ans")
 	sentence = ""
 	selectwordList = []
-	if reverse : stack.reverse()
+	if reverse : 
+		stack.reverse()
+		stack.pop()
+
 	for s in stack:
 		if s["visit"] == True:
 			sa = s["text"]

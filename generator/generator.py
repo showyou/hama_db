@@ -20,6 +20,7 @@ import string
 import sys
 import simplejson
 
+g_debug = False
 
 def generator():
 	#sched = scheduler.Scheduler()
@@ -34,19 +35,21 @@ def generator():
 		if( reply.count() > 0 ):
 			str = DoReply(reply,dbSession)
 		else:
-			#try:
+			try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
 				str = CreateMarkovSentenceWithHot(dbSession)
-			#except:
-			#	print "Unexpected error:", sys.exc_info()[0]
-			#	str,sl = vsearch.depthFirstSearch(dbSession,"yystart","yyend",20)
-				SendMessage(str)
+			except:
+				print "Unexpected error:", sys.exc_info()[0]
+				str,sl = vsearch.depthFirstSearch(dbSession,u"yystart",u"yyend",10)
+			SendMessage(str)
 
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)
-	fw,sl1 = vsearch.depthFirstSearch(session,w,"yyend",10)
-	bw,sl2 = vsearch.depthFirstSearch(session,"yystart",w,10,True)
+	fw,sl1 = vsearch.depthFirstSearch(session,w,u"yyend",5)
+	bw,sl2 = vsearch.depthFirstSearch(session,w,u"yystart",5,True)
+	print_d(len(sl1))
+	print_d(len(sl2))
 	str =bw+fw
 	return str
 
@@ -68,8 +71,10 @@ def SendMessage(str):
 	tw = twitterscraping.Twitter(userData)
 	str = string.replace(str,'yystart','')
 	str = string.replace(str,'yyend','')
-	#print(str)
-	tw.put(str)
+	if g_debug :
+		print(str)
+	else:
+		tw.put(str)
 
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()
@@ -109,7 +114,7 @@ def SelectHotWord(session):
 	w = random.choice(hotNArray)
 	q3 = session.query(model.Top10Words).filter(model.Top10Words.word == w)
 	q3[0].isSelect = True
-	print ("hot"+w)	
+	print_d("hot"+w)	
 	return w 
 
 # 返事考える
@@ -166,6 +171,15 @@ def GetQueryByCount(filter):
 	# ここまででresultにはなにか入ってるはず 
 	return result 
 
+def print_d(str):
+	if g_debug:
+		print(str)
 
+if __name__ == '__main__':
+	if len(sys.argv) > 1:
+		if sys.argv[1] == "debug":
+			print "debug mode"
+			g_debug = sys.argv[1]
+	#generator()
 generator()
 
