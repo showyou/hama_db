@@ -32,9 +32,11 @@ def depthFirstSearch(session,startWord,endWord,depthMax,reverse=False):
 			stack[-1]["visit"] = True
 			break
 		else:
-			if node["visit"] == True or depth >= depthMax:
+			if node["visit"] == True: 
 				stack.pop()
 				depth -= 1
+			elif depth >= depthMax:
+				stack.pop()
 			else:
 				#print (node["text"])
 				stack[-1]["visit"] = True

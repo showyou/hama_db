@@ -46,8 +46,12 @@ def generator():
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)
-	fw,sl1 = vsearch.depthFirstSearch(session,w,u"yyend",5)
-	bw,sl2 = vsearch.depthFirstSearch(session,w,u"yystart",5,True)
+	fw,sl1 = vsearch.depthFirstSearch(session,w,u"yyend",8)
+	bw,sl2 = vsearch.depthFirstSearch(session,w,u"yystart",8,True)
+	q3 = model.SelectedHotWord()
+	q3.word = w
+	q3.isSelect = True
+	session.save(q3)
 	print_d(len(sl1))
 	print_d(len(sl2))
 	str =bw+fw
@@ -112,8 +116,6 @@ def SelectHotWord(session):
 
 	hotNArray = TopN(session,hotWord,10)
 	w = random.choice(hotNArray)
-	q3 = session.query(model.Top10Words).filter(model.Top10Words.word == w)
-	q3[0].isSelect = True
 	print_d("hot"+w)	
 	return w 
 
