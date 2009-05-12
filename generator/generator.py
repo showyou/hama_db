@@ -37,12 +37,35 @@ def generator():
 		else:
 			try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
-				str = CreateMarkovSentenceWithHot(dbSession)
+				str,sl = CreateMarkovSentenceWithHot(dbSession)
 			except:
 				print "Unexpected error:", sys.exc_info()[0]
 				str,sl = vsearch.depthFirstSearch(dbSession,u"yystart",u"yyend",10)
-			SendMessage(str)
+			print_d(str)
+			print_d(len(sl))
+			asl = afterEffect(sl)
+			sentence = ""
+			for i in asl:
+				sentence += i
+			sendMessage(sentence)
 
+# 文章生成後の後処理(口癖とか)
+# >>> afterEffect([u"りんご",u"は",u"青い",u"。"])
+# [u"りんご",u"は",u"青い,u"です。"]
+def afterEffect(sl):
+	asl = []
+	for i in range(0,len(sl)):
+		appendFlag = True 
+		if sl[i] == u"。" and i > 0:
+			if(sl[i-1] != u"です"):
+				asl.append(u"です。")
+				appendFlag = False
+		elif i == len(sl)-1 and sl[i] != u"。":
+			asl.append(u"です。")
+			appendFlag = False
+		if appendFlag :
+			asl.append(sl[i])
+	return asl
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)
@@ -55,7 +78,8 @@ def CreateMarkovSentenceWithHot(session):
 	print_d(len(sl1))
 	print_d(len(sl2))
 	str =bw+fw
-	return str
+	sl = sl1+sl2
+	return str,sl
 
 def LoadUserData(fileName):
 	#ファイルを開いて、データを読み込んで変換する
@@ -70,7 +94,7 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def SendMessage(str):
+def sendMessage(str):
 	userData = LoadUserData(conf_path)
 	tw = twitterscraping.Twitter(userData)
 	str = string.replace(str,'yystart','')
@@ -138,7 +162,7 @@ def DoReply(reply,session):
 		elif r.text == 'tadaima':
 			sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
 		elif r.text == 'otukare':
-			s = random.choice((u'おつかれさま～',u'あともうちょっとよ',u'私が見守っているのよ！',u'大丈夫?',u'大丈夫,きっとなんとかなるわよ！',u'なでなで〜'))
+			s = random.choice((u'おつかれさまです',u'あともうちょっとです',u'私が見守ってます！',u'大丈夫?',u'大丈夫,きっとなんとかなります！',u'なでなで〜'))
 			sentence = "@"+r.user+" "+s
 		elif r.text == 'chucchu':
 			s = random.choice((u'ちゅっちゅー<3',u'にゃ〜',u'にゃん♪',u'うふふー'))
@@ -181,7 +205,7 @@ if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		if sys.argv[1] == "debug":
 			print "debug mode"
-			g_debug = sys.argv[1]
+			g_debug = True
 	#generator()
 generator()
 
