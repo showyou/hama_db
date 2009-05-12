@@ -68,20 +68,20 @@ def DoReply(reply,session):
                 else:
                     l2num += 1
                 if len(sentence) > 100: break
-            sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー'))
+            sentence += " "+random.choice((u'おはようだ！',u'おはようでござる'))
         elif r.text == 'tadaima':
-            sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
+            sentence = "@"+r.user+" "+random.choice((u" おかえりだ！"))
         elif r.text == 'otukare':
-            s = random.choice((u'おつかれさま～',u'あともうちょっとよ',u'私が見守っているのよ！',u'大丈夫?',u'大丈夫,きっとなんとかなるわよ！',u'なでなで〜'))
+            s = random.choice((u'お疲れさまだ！',u'大丈夫、明日は明日の風が吹くぞ'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'chucchu':
-            s = random.choice((u'ちゅっちゅー<3',u'にゃ〜',u'にゃん♪',u'うふふー'))
+            s = random.choice((u'う、恥ずかしいでござる。',u'にゃ〜',u'ごろごろ'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
-            s = u'だれがもやしですか'
+            s = u'だれがもやしなのだ！'
             sentence = "@"+r.user+" "+s
         else:
-            s = random.choice((u'はい',u'にゃん♪',u'うんうん',u'ちゅっちゅー<3',u'ずこー'))
+            s = random.choice((u'ぎゃーす！！'))
             sentence = "@"+r.user+" "+s
         SendMessage(sentence)
         session.delete(r)   

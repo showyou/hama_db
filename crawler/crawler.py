@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama_db/"
+exec_path = "/home/yuki/public_git/donsuke2/"
 conf_path = exec_path+"./config.json"
 
 import sys
