@@ -218,28 +218,4 @@ def AnalyzeReply(x,session):
         session.save(d)
     session.commit()
 
-def RemoveCharacter(str):
-    #余計な記号(http://とか、[hoge]とか)
-    reg = re.compile('http://\S+\s*')
-    regTag = re.compile('[.*]')
-    regTag2 = re.compile('\*.*\*')
-
-    if reg.search(str):
-        print_d2("http cut")
-        str = reg.sub(' ',str)
-    
-    if regTag.search(str):
-        print_d2("tag cut")
-        str = regTag.sub(' ',str)
-    
-    if regTag2.search(str):
-        print_d2("tag2 cut")
-        str = regTag2.sub(' ',str)
-
-    return str
-
-def print_d2(str):
-    if _debug:
-        print unicode(str,g_systemencode,'ignore').encode(g_outencode,'ignore'),
-
 quickAnalyze()

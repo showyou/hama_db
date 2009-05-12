@@ -15,6 +15,13 @@ import toDate
 from   sqlalchemy import and_
 
 
+#ログに入れない人のリスト
+g_ngUser = [ 
+	"ha_ma", "donsuke", "yuka_" 
+]
+
+
+
 dbSession = None
 
 def getAuthData(fileName):
@@ -22,6 +29,12 @@ def getAuthData(fileName):
 	a = simplejson.loads(file.read())
 	file.close()
 	return a
+
+# NGUserならTrue そうでないならFalse 
+def isNGUser(user):
+	for u in g_ngUser:
+		if u == user: return True
+	return False
 
 # twitterから発言を取ってきてDBに格納する
 userdata = getAuthData(conf_path)
@@ -38,6 +51,7 @@ for td in l:
 	#print "get:",td[0],":",td[1]
 	query = dbSession.query(model.Twit).filter(and_(model.Twit.datetime==d,model.Twit.user==td[0]))
 	if( query.count() > 0 ): continue
+	if( isNGUser(td[0]) ): continue
 	t = model.Twit()
 	t.user = td[0]
 	#print "pppppp",
