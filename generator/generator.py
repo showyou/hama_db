@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-exec_path = "/home/yuki/public_git/hama_db/"
+exec_path = "/home/yuki/public_git/hama2/"
 conf_path = exec_path+"./config.json"
 
 import sys
@@ -57,11 +57,11 @@ def afterEffect(sl):
 	for i in range(0,len(sl)):
 		appendFlag = True 
 		if sl[i] == u"。" and i > 0:
-			if(sl[i-1] != u"です"):
-				asl.append(u"です。")
+			if(sl[i-1] != u"なのよ"):
+				asl.append(u"なのよ。")
 				appendFlag = False
 		elif i == len(sl)-1 and sl[i] != u"。":
-			asl.append(u"です。")
+			asl.append(u"なのよ。")
 			appendFlag = False
 		if appendFlag :
 			asl.append(sl[i])
@@ -158,20 +158,20 @@ def DoReply(reply,session):
 				else:
 					l2num += 1
 					if len(sentence) > 100: break
-			sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー',u'おはよー'))
+			sentence += " "+random.choice((u'おはようございますなのよ',u'おはようなのよ'))
 		elif r.text == 'tadaima':
-			sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
+			sentence = "@"+r.user+" "+random.choice((u" おかえりなのよ",u" おかえりなさいなのよ"))
 		elif r.text == 'otukare':
-			s = random.choice((u'おつかれさまです',u'あともうちょっとです',u'私が見守ってます！',u'大丈夫?',u'大丈夫,きっとなんとかなります！',u'なでなで〜'))
+			s = random.choice((u'おつかれさまなのよ',u'あともうちょっと、なのよ。',u'私が見守ってるのよ！'))
 			sentence = "@"+r.user+" "+s
 		elif r.text == 'chucchu':
-			s = random.choice((u'ちゅっちゅー<3',u'にゃ〜',u'にゃん♪',u'うふふー'))
+			s = random.choice((u'にゃ〜',u'にゃん♪'))
 			sentence = "@"+r.user+" "+s
 		elif r.text == 'at':
-			s = random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'ずこー'))
+			s = random.choice((u'うん、そんなところなのよ。',u'あーあ、今日もかったるいのよ',u'ありがとーなのよ♪',u'そうなのよ。',u'だ、だれもあんたのためにいったわけじゃないのよ！'))
 			sentence = "@"+r.user+" "+s
 		elif r.text == 'moyashi':
-			s = u'だれがもやしですか'
+			s = u'だれがもやしなのよ'
 			sentence = "@"+r.user+" "+s
 		sendMessage(sentence)
 		session.delete(r)	
