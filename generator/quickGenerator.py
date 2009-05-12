@@ -45,7 +45,7 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def SendMessage(str):
+def sendMessage(str):
     userData = LoadUserData(conf_path)
     tw = twitterscraping.Twitter(userData)
     str = string.replace(str,'yystart','')
