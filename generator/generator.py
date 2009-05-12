@@ -206,7 +206,7 @@ def DoReply(reply,session):
             sentence = "@"+r.user+" "+s
         elif r.text == 'at':
             s = random.choice((u'ふむふむでござる',u'そういうこともあるのでござろう'))
-			sentence = "@"+r.user+" "+s
+            sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
             s = u'だれがもやしなのだ！'
             sentence = "@"+r.user+" "+s

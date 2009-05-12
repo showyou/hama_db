@@ -45,7 +45,7 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def SendMessage(str):
+def sendMessage(str):
     userData = LoadUserData(conf_path)
     tw = twitterscraping.Twitter(userData)
     str = string.replace(str,'yystart','')
@@ -83,7 +83,7 @@ def DoReply(reply,session):
         else:
             s = random.choice((u'ぎゃーす！！'))
             sentence = "@"+r.user+" "+s
-        SendMessage(sentence)
+        sendMessage(sentence)
         session.delete(r)   
         if sentence != "":
             break
