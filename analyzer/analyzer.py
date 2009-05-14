@@ -55,7 +55,7 @@ def analyze():
 		dbSession.commit()
 		
 		AppendMarkov(markovWordList,dbSession)
-		AppendCollocation(markovWordList,dbSession)
+		#AppendCollocation(markovWordList,dbSession)
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
