@@ -28,8 +28,7 @@ regTadaima = re.compile(u'ただいま|帰宅')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
 regMoyashi = re.compile(u'もやし')
-regAthama = re.compile(u'(@yuka_|@ゆーか|@ゆうか)(.*)')
-#regAthama = re.compile(u'(@yuka_|@ゆーか|@ゆうか)')
+regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
 
 
 def LoadUserData(fileName):

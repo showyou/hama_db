@@ -45,7 +45,7 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def SendMessage(str):
+def sendMessage(str):
     userData = LoadUserData(conf_path)
     tw = twitterscraping.Twitter(userData)
     str = string.replace(str,'yystart','')
@@ -68,22 +68,22 @@ def DoReply(reply,session):
                 else:
                     l2num += 1
                 if len(sentence) > 100: break
-            sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー'))
+            sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー',u'おはよー'))
         elif r.text == 'tadaima':
             sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
         elif r.text == 'otukare':
-            s = random.choice((u'おつかれさま～',u'あともうちょっとよ',u'私が見守っているのよ！',u'大丈夫?',u'大丈夫,きっとなんとかなるわよ！',u'なでなで〜'))
+            s = random.choice((u'おつかれさまです',u'あともうちょっとです',u'私が見守ってます！',u'大丈夫?',u'大丈夫,きっとなんとかなります！',u'なでなで〜'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'chucchu':
             s = random.choice((u'ちゅっちゅー<3',u'にゃ〜',u'にゃん♪',u'うふふー'))
             sentence = "@"+r.user+" "+s
+        elif r.text == 'at':
+            s = random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'ずこー'))
+            sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
             s = u'だれがもやしですか'
             sentence = "@"+r.user+" "+s
-        else:
-            s = random.choice((u'はい',u'にゃん♪',u'うんうん',u'ちゅっちゅー<3',u'ずこー'))
-            sentence = "@"+r.user+" "+s
-        SendMessage(sentence)
+        sendMessage(sentence)
         session.delete(r)   
         if sentence != "":
             break
