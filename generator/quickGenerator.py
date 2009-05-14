@@ -81,7 +81,7 @@ def DoReply(reply,session):
             s = u'だれがもやしなのだ！'
             sentence = "@"+r.user+" "+s
         else:
-            s = random.choice((u'ぎゃーす！！'))
+            s = u'ぎゃーす！！'
             sentence = "@"+r.user+" "+s
         sendMessage(sentence)
         session.delete(r)   
