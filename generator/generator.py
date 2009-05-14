@@ -157,7 +157,7 @@ def DoReply(reply,session):
 					session.delete(l2)
 				else:
 					l2num += 1
-					if len(sentence) > 100: break
+				if len(sentence) > 100: break
 			sentence += " "+random.choice((u'おはようございますなのよ',u'おはようなのよ'))
 		elif r.text == 'tadaima':
 			sentence = "@"+r.user+" "+random.choice((u" おかえりなのよ",u" おかえりなさいなのよ"))
