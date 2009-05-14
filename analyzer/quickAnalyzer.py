@@ -177,10 +177,6 @@ def AnalyzeReply(x,session):
         print_d2("chucchu hit")
         d.user = x.user
         d.text = "chucchu"
-    elif regMoyashi.search(x.text):
-        print_d2("moyashi hit")
-        d.user = x.user
-        d.text = "moyashi"
     else:
         match2 = regAthama.match(x.text)
         if match2:

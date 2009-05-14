@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/donsuke/"
+exec_path = "/home/yuki/public_git/donsuke2/"
 conf_path = exec_path+"./config.json"
 
 import sys
@@ -70,7 +70,7 @@ def DoReply(reply,session):
                 if len(sentence) > 100: break
             sentence += " "+random.choice((u'おはようだ！',u'おはようでござる'))
         elif r.text == 'tadaima':
-            sentence = "@"+r.user+" "+random.choice((u" おかえりだ！"))
+            sentence = "@"+r.user+" "+random.choice((u" おかえりだ！",u"おかえりでござる"))
         elif r.text == 'otukare':
             s = random.choice((u'お疲れさまだ！',u'大丈夫、明日は明日の風が吹くぞ'))
             sentence = "@"+r.user+" "+s
