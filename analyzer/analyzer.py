@@ -39,7 +39,7 @@ def analyze():
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
-		t.isAnalyze = 3
+		t.isAnalyze = 2 
 		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
 		sarray2 = connectUnderScore(sarray)
@@ -55,7 +55,7 @@ def analyze():
 		dbSession.commit()
 		
 		AppendMarkov(markovWordList,dbSession)
-		AppendCollocation(markovWordList,dbSession)
+		#AppendCollocation(markovWordList,dbSession)
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
