@@ -39,7 +39,7 @@ def analyze():
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
-		t.isAnalyze = 3
+		t.isAnalyze = 2 
 		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
 		sarray2 = connectUnderScore(sarray)
@@ -142,10 +142,10 @@ def AppendMarkov(markovWordList,session):
 # l : わかち書きした単語のリスト
 def AppendCollocation(l,session):
 	q = session.query(model.Collocation)
-	for i in range(len(l)):
-		a = unicode(l[i],g_mecabencode,'ignore')
-		for j in range(i+1,len(l)):
-			b = unicode(l[j],g_mecabencode,'ignore')
+	for i in range(len(l)-1):
+		a = unicode(l[i],g_systemencode,'ignore')
+		for j in range(i+1,len(l)-1):
+			b = unicode(l[j],g_systemencode,'ignore')
 			# もしa = a, b=bがあったらそれに1足す
 			q2 = q.filter(and_(model.Collocation.a == a ,
 				 	model.Collocation.b == b))
