@@ -78,7 +78,7 @@ def CreateMarkovSentenceWithHot(session):
 	print_d(len(sl1))
 	print_d(len(sl2))
 	str =bw+fw
-	sl = sl1+sl2
+	sl = sl2+sl1
 	return str,sl
 
 def LoadUserData(fileName):
