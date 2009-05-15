@@ -70,7 +70,7 @@ def DoReply(reply,session):
 					if len(sentence) > 100: break
 			sentence += " "+random.choice((u'おはようございますなのよ',u'おはようなのよ'))
 		elif r.text == 'tadaima':
-			sentence = "@"+r.user+" "+random.choice((u" おかえりなのよ",u" おかえりなさいなのよ"))
+			sentence = "@"+r.user+" "+random.choice((u"おかえりなのよ",u"おかえりなさいなのよ"))
 		elif r.text == 'otukare':
 			s = random.choice((u'おつかれさまなのよ',u'あともうちょっと、なのよ。',u'私が見守ってるのよ！'))
 			sentence = "@"+r.user+" "+s
