@@ -210,7 +210,7 @@ def DoReply(reply,session):
             sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
             s = u'だれがもやしですか'
-        sentence = "@"+r.user+" "+s
+            sentence = "@"+r.user+" "+s
         sendMessage(sentence)
         session.delete(r)  
         if sentence != "":
