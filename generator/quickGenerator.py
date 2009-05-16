@@ -83,7 +83,8 @@ def DoReply(reply,session):
 		elif r.text == 'moyashi':
 			s = u'だれがもやしなのよ'
 			sentence = "@"+r.user+" "+s
-		sendMessage(sentence)
+		if sentence != "":
+			sendMessage(sentence)
 		session.delete(r)	
 		if sentence != "":
 			break
