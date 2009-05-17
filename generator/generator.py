@@ -19,7 +19,6 @@ import random
 import string
 import sys
 import simplejson
-
 g_debug = False
 
 def generator():
@@ -103,6 +102,8 @@ def sendMessage(str):
 		print(str)
 	else:
 		tw.put(str)
+		import irccat2
+		irccat2.main(str) #送信→終了なるので注意
 
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()

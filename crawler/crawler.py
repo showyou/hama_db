@@ -48,15 +48,11 @@ dbSession = model.startSession(userdata)
 for td in l:
 	if td[0] == userdata["user"]:continue
 	d = toDate.toDate(td[2],"%a %b %d %H:%M:%S +0000 %Y")
-	#print "get:",td[0],":",td[1]
 	query = dbSession.query(model.Twit).filter(and_(model.Twit.datetime==d,model.Twit.user==td[0]))
 	if( query.count() > 0 ): continue
 	if( isNGUser(td[0]) ): continue
 	t = model.Twit()
 	t.user = td[0]
-	#print "pppppp",
-	#print td[0]
-	#print td[1]
 	t.text = td[1]
 	t.datetime = d
 	dbSession.save(t)
