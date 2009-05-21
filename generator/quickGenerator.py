@@ -31,7 +31,7 @@ def quickGenerate():
         rep = dbSession.query(model.RetQueue)
         if( rep.count() > 0 ):
             str = reply.do(rep,dbSession)
-
+            sendMessage(str)
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する

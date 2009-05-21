@@ -21,7 +21,7 @@ class IRCCat(irclib.SimpleIRCClient):
         sys.exit(0)
 
     def send_it(self):
-        self.connection.privmsg(self.target, self.message.encode("iso-2022-jp"))
+        self.connection.privmsg(self.target, self.message.encode("iso-2022-jp",'ignore'))
         self.connection.quit("Using irclib.py")
 
 def main(message):

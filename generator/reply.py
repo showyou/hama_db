@@ -35,10 +35,8 @@ def do(reply,session):
             s = u'むきゅー'
             sentence = "@"+r.user+" "+s
         elif r.text == 'wanwan':
-            s = random.choice(u'うー、わんわん',u'わんわん')
+            s = random.choice((u'うー、わんわん',u'わんわん'))
             sentence = "@"+r.user+" "+s
-        if sentence != "":
-            sendMessage(sentence)
         session.delete(r)  
         if sentence != "":
             break

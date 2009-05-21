@@ -33,7 +33,7 @@ def generator():
 	else:
 		rep = dbSession.query(model.RetQueue)
 		if( rep.count() > 0 ):
-			str = reply.do(rep,dbSession)
+			sentence = reply.do(rep,dbSession)
 		else:
 			try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
@@ -47,7 +47,7 @@ def generator():
 			sentence = ""
 			for i in asl:
 				sentence += i
-			sendMessage(sentence)
+		sendMessage(sentence)
 
 # 文章生成後の後処理(口癖とか)
 # >>> afterEffect([u"りんご",u"は",u"青い",u"。"])
