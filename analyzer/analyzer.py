@@ -18,7 +18,7 @@ g_mecabencode = "euc-jp"
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-exec_path = "/home/yuki/public_git/hama_db/"
+exec_path = "/home/yuki/public_git/hama2/"
 conf_path = exec_path+"./config.json"
 
 dbSession = None
@@ -142,7 +142,6 @@ def AppendMarkov(markovWordList,session):
 # l : わかち書きした単語のリスト
 def AppendCollocation(l,session):
 	q = session.query(model.Collocation)
-	# yyendだけ無視
 	for i in range(len(l)-1):
 		a = unicode(l[i],g_systemencode,'ignore')
 		for j in range(i+1,len(l)-1):
