@@ -53,13 +53,13 @@ def sendMessage(str):
     #print(str)
     tw.put(str)
 
-#返事考える
+# 返事考える
 def DoReply(reply,session):
     sentence = ""
     for r in reply:
         if r.text == "ohayou" :
             sentence = ".@"+r.user
-            l2num = 1 
+            l2num = 1
             while l2num < reply.count():
                 l2 = reply[l2num]
                 if l2.text == "ohayou":
@@ -83,9 +83,15 @@ def DoReply(reply,session):
         elif r.text == 'moyashi':
             s = u'だれがもやしですか'
             sentence = "@"+r.user+" "+s
-        if  sentence != "" :
+        elif r.text == 'mukyu':
+            s = u'むきゅー'
+            sentence = "@"+r.user+" "+s
+        elif r.text == 'wanwan':
+            s = random.choice((u'うー、わんわん',u'わんわん'))
+            sentence = "@"+r.user+" "+s
+        if sentence != "":
             sendMessage(sentence)
-        session.delete(r)   
+        session.delete(r)  
         if sentence != "":
             break
     session.commit()
