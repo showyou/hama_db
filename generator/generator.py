@@ -10,6 +10,7 @@ sys.path.insert(0,exec_path)
 
 from common import twitterscraping
 import vsearch
+import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
 #import scheduler
@@ -19,7 +20,6 @@ import random
 import string
 import sys
 import simplejson
-
 g_debug = False
 
 def generator():
@@ -31,9 +31,9 @@ def generator():
 	#if( sched.has_schedule() ):
 		str = doSchedule(sched)
 	else:
-		reply = dbSession.query(model.RetQueue)
-		if( reply.count() > 0 ):
-			str = DoReply(reply,dbSession)
+		rep = dbSession.query(model.RetQueue)
+		if( rep.count() > 0 ):
+			sentence = reply.do(rep,dbSession)
 		else:
 			try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
@@ -47,7 +47,7 @@ def generator():
 			sentence = ""
 			for i in asl:
 				sentence += i
-			sendMessage(sentence)
+		sendMessage(sentence)
 
 # 文章生成後の後処理(口癖とか)
 # >>> afterEffect([u"りんご",u"は",u"青い",u"。"])
@@ -57,11 +57,11 @@ def afterEffect(sl):
 	for i in range(0,len(sl)):
 		appendFlag = True 
 		if sl[i] == u"。" and i > 0:
-			if(sl[i-1] != u"である"):
-				asl.append(u"である。")
+			if(sl[i-1] != u"です"):
+				asl.append(u"です。")
 				appendFlag = False
 		elif i == len(sl)-1 and sl[i] != u"。":
-			asl.append(u"である。")
+			asl.append(u"です。")
 			appendFlag = False
 		if appendFlag :
 			asl.append(sl[i])
@@ -73,8 +73,8 @@ def CreateMarkovSentenceWithHot(session):
 	bw,sl2 = vsearch.depthFirstSearch(session,w,u"yystart",8,True)
 	q3 = model.SelectedHotWord()
 	q3.word = w
-	q3.isSelect = True
 	session.save(q3)
+	session.commit()
 	print_d(len(sl1))
 	print_d(len(sl2))
 	str =bw+fw
@@ -103,6 +103,8 @@ def sendMessage(str):
 		print(str)
 	else:
 		tw.put(str)
+		#import irccat2
+		#irccat2.main(str) #送信→終了なるので注意
 
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()
@@ -122,6 +124,7 @@ def TopN(session, wordcnt,n):
 		session.save(tw)
 		i+=1
 		if i >= n : break
+	session.commit()
 	return lst
 
 # 最近人気の単語から一つ抜き出す
@@ -142,48 +145,6 @@ def SelectHotWord(session):
 	w = random.choice(hotNArray)
 	print_d("hot"+w)	
 	return w 
-
-#返事考える
-def DoReply(reply,session):
-    sentence = ""
-    for r in reply:
-        if r.text == "ohayou" :
-            sentence = ".@"+r.user
-            l2num = 1 
-            while l2num < reply.count():
-                l2 = reply[l2num]
-                if l2.text == "ohayou":
-                    sentence += " @"+l2.user
-                    session.delete(l2)
-                else:
-                    l2num += 1
-                if len(sentence) > 100: break
-            sentence += " "+random.choice((u'おはようだ！',u'おはようでござる'))
-        elif r.text == 'tadaima':
-            #sentence = "@"+r.user+" "+random.choice((u" おかえりだ！"))
-			s = u"おかえりだ！"
-			sentence = "@"+r.user+" "+s
-        elif r.text == 'otukare':
-            s = random.choice((u'お疲れさまだ！',u'大丈夫、明日は明日の風が吹くぞ'))
-            sentence = "@"+r.user+" "+s
-        elif r.text == 'chucchu':
-            s = random.choice((u'う、恥ずかしいでござる。',u'にゃ〜',u'ごろごろ'))
-            sentence = "@"+r.user+" "+s
-        elif r.text == 'at':
-            s = random.choice((u'ふむふむでござる',u'そういうこともあるのでござろう'))
-            sentence = "@"+r.user+" "+s
-        elif r.text == 'moyashi':
-            s = u'だれがもやしなのだ！'
-            sentence = "@"+r.user+" "+s
-        else:
-            s = u'ぎゃーす！！'
-            sentence = "@"+r.user+" "+s
-        sendMessage(sentence)
-        session.delete(r)   
-        if sentence != "":
-            break
-    session.commit()
-    return sentence
 
 # 数量に応じて結果を返す
 # ex: [a:5, b:3, c:2] なら aが5割、bが3割、cが2割の確率

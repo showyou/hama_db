@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0,exec_path)
 
 from common import twitterscraping
+import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
 #import scheduler
@@ -27,10 +28,10 @@ def quickGenerate():
         if( sched.has_schedule() ):
             str = doSchedule(sched)
     else:
-        reply = dbSession.query(model.RetQueue)
-        if( reply.count() > 0 ):
-            str = DoReply(reply,dbSession)
-
+        rep = dbSession.query(model.RetQueue)
+        if( rep.count() > 0 ):
+            str = reply.do(rep,dbSession)
+            sendMessage(str)
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -52,43 +53,5 @@ def sendMessage(str):
     
     #print(str)
     tw.put(str)
-
-#返事考える
-def DoReply(reply,session):
-    sentence = ""
-    for r in reply:
-        if r.text == "ohayou" :
-            sentence = ".@"+r.user
-            l2num = 1 
-            while l2num < reply.count():
-                l2 = reply[l2num]
-                if l2.text == "ohayou":
-                    sentence += " @"+l2.user
-                    session.delete(l2)
-                else:
-                    l2num += 1
-                if len(sentence) > 100: break
-            sentence += " "+random.choice((u'おはようだ！',u'おはようでござる'))
-        elif r.text == 'tadaima':
-            sentence = "@"+r.user+" "+random.choice((u"おかえりだ！",u"おかえりでござる"))
-        elif r.text == 'otukare':
-            s = random.choice((u'お疲れさまだ！',u'大丈夫、明日は明日の風が吹くぞ'))
-            sentence = "@"+r.user+" "+s
-        elif r.text == 'chucchu':
-            s = random.choice((u'う、恥ずかしいでござる。',u'にゃ〜',u'ごろごろ'))
-            sentence = "@"+r.user+" "+s
-        elif r.text == 'moyashi':
-            s = u'だれがもやしなのだ！'
-            sentence = "@"+r.user+" "+s
-        else:
-            s = u'ぎゃーす！！'
-            sentence = "@"+r.user+" "+s
-        if sentence != "":
-            sendMessage(sentence)
-        session.delete(r)   
-        if sentence != "":
-            break
-    session.commit()
-    return sentence 
 
 quickGenerate()
