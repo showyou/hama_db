@@ -73,8 +73,8 @@ def CreateMarkovSentenceWithHot(session):
 	bw,sl2 = vsearch.depthFirstSearch(session,w,u"yystart",8,True)
 	q3 = model.SelectedHotWord()
 	q3.word = w
-	q3.isSelect = True
 	session.save(q3)
+	session.commit()
 	print_d(len(sl1))
 	print_d(len(sl2))
 	str =bw+fw
@@ -124,6 +124,7 @@ def TopN(session, wordcnt,n):
 		session.save(tw)
 		i+=1
 		if i >= n : break
+	session.commit()
 	return lst
 
 # 最近人気の単語から一つ抜き出す
