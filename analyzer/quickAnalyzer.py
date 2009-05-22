@@ -28,9 +28,7 @@ regTadaima = re.compile(u'ただいま|帰宅')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
 regMoyashi = re.compile(u'もやし')
-regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
-regWanwan = re.compile(u'わんわん')
-regMukyu = re.compile(u'むきゅー')
+regAthama = re.compile(u'(@donsuke|@どんすけ)(.*)')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -184,14 +182,7 @@ def AnalyzeReply(x,session):
             d.user = x.user
             text = match2.group(2)
 
-            if regMukyu.search(text):
-                print_d2("mukyu hit")
-                d.text = "mukyu"
-            elif regWanwan.search(text):
-                print_d2("wanwan hit")
-                d.text = "wanwan"
-            else:
-                d.text = text
+            d.text = text
         print "at:",
 		
     # @(英数字)空白 -> user
