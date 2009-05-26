@@ -127,7 +127,7 @@ def AppendMarkov(markovWordList,session):
 		str = u"call replace_markov('%s','%s')" %(pw,cw)
 		session.execute(str)
 		# もしnow = pw, next=cwがあったらそれに1足す
-		q2 = q.filter(and_(model.Markov.now == pw,
+		"""q2 = q.filter(and_(model.Markov.now == pw,
 			 model.Markov.next == cw))
 		if q2.count() > 0:
 			markov = q2.one()
@@ -136,7 +136,7 @@ def AppendMarkov(markovWordList,session):
 			markov = model.Markov()
 			markov.now =  pw
 			markov.next = cw
-		session.save_or_update(markov)
+		session.save_or_update(markov)"""
 		pw = cw
 	session.commit()
 
