@@ -124,8 +124,7 @@ def AppendMarkov(markovWordList,session):
 	q = session.query(model.Markov)
 	for cw in markovWordList:
 		cw = unicode(cw,g_systemencode)
-		str = u"call replace_markov('%s','%s')" %(pw,cw)
-		session.execute(str)
+		session.execute(u"call replace_markov(%s,%s)",(pw,cw))
 		# もしnow = pw, next=cwがあったらそれに1足す
 		"""q2 = q.filter(and_(model.Markov.now == pw,
 			 model.Markov.next == cw))
