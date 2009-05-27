@@ -87,7 +87,7 @@ collocation = Table("collocation",metadata,
 def startSession(conf):
 	
 	config = {"sqlalchemy.url":
-			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]}
+			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]+"?charset=utf8","sqlalchemy.echo":"False"}
 	engine = sqlalchemy.engine_from_config(config)
 
 	dbSession = scoped_session(
