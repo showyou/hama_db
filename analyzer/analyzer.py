@@ -116,6 +116,7 @@ def RemoveCharacter(str):
 
 	return str
 
+import datetime
 def AppendMarkov(markovWordList,session):
 	#マルコフテーブル追加
 	pw = "yystart"
@@ -123,18 +124,18 @@ def AppendMarkov(markovWordList,session):
 	q = session.query(model.Markov)
 	for cw in markovWordList:
 		cw = unicode(cw,g_systemencode)
+		session.execute(u"call replace_markov(%s,%s)",(pw,cw))
 		# もしnow = pw, next=cwがあったらそれに1足す
-		q2 = q.filter(and_(model.Markov.now == pw,
+		"""q2 = q.filter(and_(model.Markov.now == pw,
 			 model.Markov.next == cw))
 		if q2.count() > 0:
-			markov = q2[0]
+			markov = q2.one()
 			markov.count += 1
 		else:
 			markov = model.Markov()
 			markov.now =  pw
 			markov.next = cw
-		
-		session.save_or_update(markov)
+		session.save_or_update(markov)"""
 		pw = cw
 	session.commit()
 
