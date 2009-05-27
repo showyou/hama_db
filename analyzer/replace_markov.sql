@@ -1,3 +1,4 @@
+delimiter //
 CREATE DEFINER=`yuki`@`localhost` PROCEDURE `replace_markov`(IN nows VARCHAR(32), IN nexts VARCHAR(32))
 BEGIN
   DECLARE mid INT;
