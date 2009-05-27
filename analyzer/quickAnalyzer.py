@@ -186,14 +186,7 @@ def AnalyzeReply(x,session):
             d.user = x.user
             text = match2.group(2)
 
-            if regMukyu.search(text):
-                print_d2("mukyu hit")
-                d.text = "mukyu"
-            elif regWanwan.search(text):
-                print_d2("wanwan hit")
-                d.text = "wanwan"
-            else:
-                d.text = text
+            d.text = text
         print "at:",
 		
     # @(英数字)空白 -> user
