@@ -182,8 +182,8 @@ def AnalyzeReply(x,session):
             d.user = x.user
             text = match2.group(2)
 
-            d.text = text
-        print "at:",
+            d.text = 'at'#text
+   	        print "at:",
 		
     # @(英数字)空白 -> user
     # この辺も直す必要ありそうだなぁ。っていうかin_reply_status_idとれるし、そっち使った方が早そう
