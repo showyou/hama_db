@@ -55,6 +55,8 @@ for td in l:
 	t.user = td[0]
 	t.text = td[1]
 	t.datetime = d
+	if td[5] != None:
+		t.replyID = td[5]
 	dbSession.save(t)
 	dbSession.commit()
 

@@ -103,6 +103,7 @@ class Twitter:
 				resultSub.append(0)
 			resultSub.append(y['profile_image_url'])
 			resultSub.append(y['id'])
+			resultSub.append(x['in_reply_to_status_id'])
 			result.append(resultSub)
 			#print resultSub[0]+resultSub[1]
 		return result
