@@ -34,6 +34,18 @@ twit = Table("twit",metadata,
 				mysql_charset = 'utf8'
 			)
 
+
+twit2 = Table("twit2",metadata,
+				Column('id', types.Integer, primary_key=True),
+				Column('user', types.Unicode(32)),
+				Column('text', types.Unicode(140)),
+				Column('in_reply_to', types.Unicode(64)),
+				Column('datetime', types.DateTime, default=datetime.now),
+				Column('isAnalyze', types.SmallInteger, default=False),
+				mysql_engine = 'MyISAM',
+				mysql_charset = 'utf8'
+			)
+
 def startSession(conf):
 
 	config = {"sqlalchemy.url":
@@ -57,6 +69,6 @@ def startSession(conf):
 		
 """
 # テスト内容
-a = startSession()
->>> --start DB Session--
+>>> a = startSession()
+--start DB Session--
 """	
