@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-exec_path = "/home/yuki/public_git/hama_db/"
+exec_path = "/home/yuki/public_git/hama2/"
 conf_path = exec_path+"./config.json"
 
 import sys
@@ -57,11 +57,11 @@ def afterEffect(sl):
 	for i in range(0,len(sl)):
 		appendFlag = True 
 		if sl[i] == u"。" and i > 0:
-			if(sl[i-1] != u"です"):
-				asl.append(u"です。")
+			if(sl[i-1] != u"なのよ"):
+				asl.append(u"なのよ。")
 				appendFlag = False
 		elif i == len(sl)-1 and sl[i] != u"。":
-			asl.append(u"です。")
+			asl.append(u"なのよ。")
 			appendFlag = False
 		if appendFlag :
 			asl.append(sl[i])
@@ -103,8 +103,6 @@ def sendMessage(str):
 		print(str)
 	else:
 		tw.put(str)
-		import irccat2
-		irccat2.main(str) #送信→終了なるので注意
 
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()
