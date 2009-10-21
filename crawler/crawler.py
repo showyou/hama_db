@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama2_wassr/"
+exec_path = "/home/yuki/public_git/hama2/"
 conf_path = exec_path+"./config.json"
 
 import sys
 sys.path.insert(0,exec_path)
 
-from common import wassr 
+from common import twitterscraping
 import simplejson
 import model
 import datetime
@@ -38,16 +38,15 @@ def isNGUser(user):
 
 # twitterから発言を取ってきてDBに格納する
 userdata = getAuthData(conf_path)
-tw = wassr.Twitter(userdata)
-tw.setAuthService("wassr")
-l = tw.get("hama")
+tw = twitterscraping.Twitter(userdata)
+l = tw.get("yuka_")
 dbSession = model.startSession(userdata)
 
 #for u in l:
 	#twList = tw.getWithUser(u) # lastTime以降の発言全部取得
 
 for td in l:
-	if td[0] == userdata["user"]: continue
+	if td[0] == userdata["user"]:continue
 	d = toDate.toDate(td[2],"%a %b %d %H:%M:%S +0000 %Y")
 	query = dbSession.query(model.Twit).filter(and_(model.Twit.datetime==d,model.Twit.user==td[0]))
 	if( query.count() > 0 ): continue
@@ -56,7 +55,7 @@ for td in l:
 	t.user = td[0]
 	t.text = td[1]
 	t.datetime = d
-	if len(td) > 5:
+	if td[5] != None:
 		t.replyID = td[5]
 	dbSession.save(t)
 	dbSession.commit()

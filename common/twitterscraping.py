@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import urllib2,urllib
 import simplejson
-import time
 
 class Twitter:
 	def __init__(self, userdata):
@@ -12,7 +11,6 @@ class Twitter:
 	
 	def setUser(self,userdata):
 		self.user = userdata
-
 	def setAuthService(self,service):
 		if service == "twitter":
 			self.serviceName = "Twitter API"
@@ -32,14 +30,12 @@ class Twitter:
 		opener = urllib2.build_opener(auth_handler)
 		urllib2.install_opener(opener)
 		return opener
-
 	def getHttpJson(self,url):
 		self.setAuthHandler()
 		data = urllib2.urlopen(url)
 		urlstring = data.read()
 		a = simplejson.loads(urlstring)
 		return a
-
 	def get(self,username): 
 		a = self.getHttpJson("http://%s/statuses/friends_timeline.json" % self.url)
 		return self.parseTwitJSON(a)
@@ -99,15 +95,15 @@ class Twitter:
 			#resultSub.append(x['created_at'])
 			#print x
 			y = x['user']
-			resultSub.append(x['user_login_id'])
+			resultSub.append(y['screen_name'])
 			resultSub.append(x['text'])
 			if self.url != "api.wassr.jp" :
 				resultSub.append(x['created_at'])
 			else:
-				resultSub.append(time.strftime("%a %b %d %H:%M:%S +0000 %Y",time.localtime(x['epoch'])))
+				resultSub.append(0)
 			resultSub.append(y['profile_image_url'])
-			resultSub.append(x['id'])
-			#resultSub.append(x['in_reply_to_status_id'])
+			resultSub.append(y['id'])
+			resultSub.append(x['in_reply_to_status_id'])
 			result.append(resultSub)
 			#print resultSub[0]+resultSub[1]
 		return result
@@ -186,7 +182,6 @@ class Twitter:
 		r = opener.open("http://twitter.com/sessions",en_post_data)
 		r.read()
 		return opener
-	
 	def getWithScraping(self,user,num=1):
 		#ログイン必要？
 		opener = self.singIn("")
