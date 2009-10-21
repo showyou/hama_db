@@ -18,8 +18,8 @@ g_mecabencode = "euc-jp"
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-homepath = "/home/yuki/public_git/hama2/analyzer/"
-exec_path = "/home/yuki/public_git/hama2/"
+homepath = "/home/yuki/public_git/hama2_wassr/analyzer/"
+exec_path = "/home/yuki/public_git/hama2_wassr/"
 conf_path = exec_path+"./config.json"
 
 dbSession = None
@@ -176,10 +176,11 @@ def AnalyzeReply(x,session):
         print_d2("chucchu hit")
         d.user = x.user
         d.text = "chucchu"
-    elif regMoyashi.search(x.text):
-        print_d2("moyashi hit")
-        d.user = x.user
-        d.text = "moyashi"
+        """elif regMoyashi.search(x.text):
+            print_d2("moyashi hit")
+            d.user = x.user
+            d.text = "moyashi"
+        """
     else:
         match2 = regAthama.match(x.text)
         if match2:

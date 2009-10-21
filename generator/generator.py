@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-exec_path = "/home/yuki/public_git/hama2/"
+exec_path = "/home/yuki/public_git/hama2_wassr/"
 conf_path = exec_path+"./config.json"
 
 import sys
 sys.path.insert(0,exec_path)
 
-from common import twitterscraping
+from common import wassr
 import vsearch
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
@@ -96,12 +96,13 @@ def LoadUserData(fileName):
 # Twitterにメッセージ投げる
 def sendMessage(str):
 	userData = LoadUserData(conf_path)
-	tw = twitterscraping.Twitter(userData)
+	tw = wassr.Twitter(userData)
 	str = string.replace(str,'yystart','')
 	str = string.replace(str,'yyend','')
 	if g_debug :
 		print(str)
 	else:
+		tw.setAuthService("wassr")
 		tw.put(str)
 
 def SortWordCnt(wordcnt):
