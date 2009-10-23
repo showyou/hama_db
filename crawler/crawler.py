@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama2/"
+exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
 import sys
@@ -57,8 +57,10 @@ def main():
 		t.user = td[0]
 		t.text = td[1]
 		t.datetime = d
-		if td[5] != None:
+		"""if len(td) > 5:
 			t.replyID = td[5]
+		else:
+			t.replyID = -1"""
 		dbSession.save(t)
 		dbSession.commit()
 

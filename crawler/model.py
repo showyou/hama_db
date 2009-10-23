@@ -32,6 +32,7 @@ twit = Table("twit",metadata,
 				Column('datetime', types.DateTime, default=datetime.now),
 				Column('replyID', types.String(64), default=-1),
 				Column('isAnalyze', types.SmallInteger, default=False),
+				Column('isReplyAnalyze',types.SmallInteger, default=0),
 				mysql_engine = 'MyISAM',
 				mysql_charset = 'utf8'
 			)

@@ -18,8 +18,8 @@ g_mecabencode = "euc-jp"
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-homepath = "/home/yuki/public_git/hama2/analyzer/"
-exec_path = "/home/yuki/public_git/hama2/"
+homepath = "/home/yuki/public_git/hama_db/analyzer/"
+exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
 dbSession = None
