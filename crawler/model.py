@@ -14,6 +14,7 @@ class Markov(object):
 class Twit(object):
 	pass
 
+init = False
 metadata = sqlalchemy.MetaData()
 markovOneColumn = Table("markov",metadata,
 					Column('id', types.Integer, primary_key=True),
@@ -36,7 +37,7 @@ twit = Table("twit",metadata,
 			)
 
 def startSession(conf):
-
+	global init
 	config = {"sqlalchemy.url":
 			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]}
 
@@ -49,9 +50,10 @@ def startSession(conf):
 						bind = engine
 					)
 				)
-
-	mapper(Markov, markovOneColumn)
-	mapper(Twit, twit)
+	if init == False:
+		mapper(Markov, markovOneColumn)
+		mapper(Twit, twit)
+		init = True
 	metadata.create_all(bind=engine)
 	print ("--start DB Session--")
 	return dbSession

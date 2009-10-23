@@ -31,6 +31,7 @@ regMoyashi = re.compile(u'もやし')
 regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
 regWanwan = re.compile(u'わんわん')
 regMukyu = re.compile(u'むきゅー')
+regBaribari = re.compile(u'ばりばり|バリバリ|マジックテープ')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -182,6 +183,10 @@ def AnalyzeReply(x,session):
         print_d2("moyashi hit")
         d.user = x.user
         d.text = "moyashi"
+    elif regBaribari.search(x.text):
+		print_d2("baribari hit")
+		d.user = x.user
+		d.text = "baribari"
     else:
         match2 = regAthama.match(x.text)
         if match2:
@@ -227,4 +232,5 @@ def AnalyzeReply(x,session):
         session.save(d)
     session.commit()
 
-quickAnalyze()
+if __name__ == "__main__":
+	quickAnalyze()

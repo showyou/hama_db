@@ -54,4 +54,5 @@ def sendMessage(str):
     #print(str)
     tw.put(str)
 
-quickGenerate()
+if __name__ == "__main__":
+	quickGenerate()

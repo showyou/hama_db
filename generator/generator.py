@@ -63,9 +63,23 @@ def afterEffect(sl):
 		elif i == len(sl)-1 and sl[i] != u"。":
 			asl.append(u"です。")
 			appendFlag = False
+		elif i > 0:
+			asl.append(wstrcat(sl[i-1],sl[i]))
+			appendFlag = False
+
 		if appendFlag :
 			asl.append(sl[i])
 	return asl
+
+"""
+	アルファベットが並んだら空白開ける
+"""
+def wstrcat(a,b):
+	#if (a.isalnum() and b.isalnum()):
+	#	result = " " + b
+	#else:
+	result = b
+	return result
 
 def CreateMarkovSentenceWithHot(session):
 	w = SelectHotWord(session)

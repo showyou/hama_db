@@ -32,6 +32,7 @@ class Top10Words(object):
 class SelectedHotWord(object):
 	pass
 
+init = False
 metadata = sqlalchemy.MetaData()
 
 ohayouTime = Table("ohayouTime",metadata,
@@ -96,7 +97,7 @@ selectedHotWord = Table("selectedHotWord", metadata,
 				mysql_charset = 'utf8'
 			)
 def startSession(conf):
-
+	global init
 	config = {"sqlalchemy.url":
 			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]}
 	engine = sqlalchemy.engine_from_config(config)
@@ -108,14 +109,15 @@ def startSession(conf):
 						bind = engine
 					)
 				)
-
-	mapper(Hot,  hot)
-	mapper(Markov,markovOneColumn)
-	mapper(RetQueue, retQueue)
-	mapper(OhayouTime, ohayouTime)
-	mapper(Collocation, collocation)
-	mapper(Top10Words, top10words)
-	mapper(SelectedHotWord, selectedHotWord)
+	if init == False:
+		mapper(Hot,  hot)
+		mapper(Markov,markovOneColumn)
+		mapper(RetQueue, retQueue)
+		mapper(OhayouTime, ohayouTime)
+		mapper(Collocation, collocation)
+		mapper(Top10Words, top10words)
+		mapper(SelectedHotWord, selectedHotWord)
+		init = True
 	metadata.create_all(bind=engine)
 	print ("--start DB Session--")
 	return dbSession
