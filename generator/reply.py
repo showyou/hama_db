@@ -38,8 +38,18 @@ def do(reply,session):
             s = random.choice((u'うー、わんわん',u'わんわん'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'baribari':
-            s = random.choice((u'やめてー',u'やめてー＞＜'))
-            sentence = "@"+r.user+" "+s
+            sentence = ".@"+r.user
+            l2num = 1
+            while l2num < reply.count():
+                l2 = reply[l2num]
+                if l2.text == "baribari":
+                    sentence += " @"+l2.user
+                    session.delete(l2)
+                else:
+                    l2num += 1
+                if len(sentence) > 100: break
+            s = random.choice((u'やめてー！',u'やめてー＞＜'))
+            sentence += " "+s
         session.delete(r)  
         if sentence != "":
             break

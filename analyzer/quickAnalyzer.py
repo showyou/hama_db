@@ -23,7 +23,7 @@ exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
 dbSession = None
-regOhayou = re.compile(u'おはよう')
+regOhayou = re.compile(u'おはよう|起床')
 regTadaima = re.compile(u'ただいま|帰宅')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
@@ -31,7 +31,7 @@ regMoyashi = re.compile(u'もやし')
 regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
 regWanwan = re.compile(u'わんわん')
 regMukyu = re.compile(u'むきゅー')
-regBaribari = re.compile(u'ばりばり|バリバリ|マジックテープ')
+regBaribari = re.compile(u'ﾊﾞﾘﾊﾞﾘ|ばりばり|バリバリ|マジックテープ')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -184,9 +184,8 @@ def AnalyzeReply(x,session):
         d.user = x.user
         d.text = "moyashi"
     elif regBaribari.search(x.text):
-		print_d2("baribari hit")
-		d.user = x.user
-		d.text = "baribari"
+        print_d2("baribari hit")
+        CheckTime("baribari",datetime.timedelta(minutes=10),x,d,session)
     else:
         match2 = regAthama.match(x.text)
         if match2:
