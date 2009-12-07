@@ -37,6 +37,20 @@ def do(reply,session):
         elif r.text == 'wanwan':
             s = random.choice((u'うー、わんわん',u'わんわん'))
             sentence = "@"+r.user+" "+s
+        elif r.text == 'gohan':
+            sentence = ".@"+r.user
+            l2num = 1
+            while l2num < reply.count():
+                l2 = reply[l2num]
+                if l2.text == "gohan":
+                    sentence += " @"+l2.user
+                    session.delete(l2)
+                else:
+                    l2num += 1
+                if len(sentence) > 100: break
+            s = random.choice((u'ありがとー、おいしー',u'いっただっきまーす',
+                            u'ありがと、でも今はいいやー'))
+            sentence += " "+s
         elif r.text == 'baribari':
             sentence = ".@"+r.user
             l2num = 1

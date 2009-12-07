@@ -57,11 +57,11 @@ def afterEffect(sl):
 	for i in range(0,len(sl)):
 		appendFlag = True 
 		if sl[i] == u"。" and i > 0:
-			if(sl[i-1] != u"なのよ"):
-				asl.append(u"なのよ。")
+			if(sl[i-1] != u"です"):
+				asl.append(u"です。")
 				appendFlag = False
 		elif i == len(sl)-1 and sl[i] != u"。":
-			asl.append(u"なのよ。")
+			asl.append(u"です。")
 			appendFlag = False
 		elif i > 0:
 			asl.append(wstrcat(sl[i-1],sl[i]))

@@ -17,7 +17,7 @@ mecabPath = "/usr/lib/libmecab.so"
 g_mecabencode = "euc-jp"
 g_systemencode = "utf-8"
 g_outencode = g_systemencode
-_debug = False 
+_debug = True
 homepath = "/home/yuki/public_git/hama_db/analyzer/"
 exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
@@ -32,6 +32,7 @@ regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
 regWanwan = re.compile(u'わんわん')
 regMukyu = re.compile(u'むきゅー')
 regBaribari = re.compile(u'ﾊﾞﾘﾊﾞﾘ|ばりばり|バリバリ|マジックテープ')
+regGohan = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)(ご飯|ごはん|めし)(あげる|やる|どぞ|どうぞ)')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -171,6 +172,10 @@ def AnalyzeReply(x,session):
     elif regTadaima.search(x.text):
         print_d2("tadaima hit")
         CheckTime("tadaima",datetime.timedelta(minutes=30),x,d,session)
+    elif regGohan.search(x.text):
+        print_d2("gohan hit")
+        d.user = x.user
+        d.text = "gohan"
     elif regTukareta.search(x.text): 
         print_d2("otukare hit")
         d.user = x.user

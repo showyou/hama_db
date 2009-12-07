@@ -13,6 +13,9 @@ from sqlalchemy import and_
 
 import model
 import simplejson
+import psyco
+psyco.full()
+
 mecabPath = "/usr/lib/libmecab.so"
 g_mecabencode = "euc-jp"
 g_systemencode = "utf-8"
@@ -91,6 +94,9 @@ def TakeWordList(sarray):
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
 
+reg = re.compile('http://\S+\s*')
+regTag = re.compile('[.*]')
+regTag2 = re.compile('\*.*\*')
 # test内容
 # RemoveCharacter("検索サイト http://www.google.com")->検索サイト
 # RemoveCharacter("検索サイト [mb]")->検索サイト
@@ -98,10 +104,6 @@ def TakeWordList(sarray):
 # しかしこれcrawlerでやるべきだよなぁ
 def RemoveCharacter(str):
 	#余計な記号(http://とか、[hoge]とか)
-	reg = re.compile('http://\S+\s*')
-	regTag = re.compile('[.*]')
-	regTag2 = re.compile('\*.*\*')
-
 	if reg.search(str):
 		print_d2("http cut")
 		str = reg.sub(' ',str)
