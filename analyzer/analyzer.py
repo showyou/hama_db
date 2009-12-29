@@ -33,32 +33,33 @@ def getAuthData(fileName):
 	return a
 
 def analyze():
-	# dbからデータを読み込む
-	userdata = getAuthData(conf_path)
-	dbSession = model.startSession(userdata)
-	# 前回の更新時間から現在までのデータを入手する
-	q = dbSession.query(model.Twit)
-	tq = q.filter(model.Twit.isAnalyze == 1) 
-	for t in tq:
-		#1発言毎
-		t.text = RemoveCharacter(t.text)
-		t.isAnalyze = 2 
-		t_enc = t.text.encode(g_mecabencode,'ignore')
-		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
-		sarray2 = connectUnderScore(sarray)
-		markovWordList,topNWordList = TakeWordList(sarray)
+    # dbからデータを読み込む
+    userdata = getAuthData(conf_path)
+    dbSession = model.startSession(userdata)
+    # 前回の更新時間から現在までのデータを入手する
+    q = dbSession.query(model.Twit)
+    tq = q.filter(model.Twit.isAnalyze == 1) 
+    for t in tq:
+        #1発言毎
+        t.text = RemoveCharacter(t.text)
+        t.isAnalyze = 2 
+        t_enc = t.text.encode(g_mecabencode,'ignore')
+        sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
+        sarray2 = connectUnderScore(sarray)
+        markovWordList,topNWordList = TakeWordList(sarray)
+        print len(markovWordList)
 		
-		#最近出た名詞貯める
-		"""for tn in topNWordList:
-			hot = model.Hot()
-			hot.word = unicode(tn,g_systemencode)
-			dbSession.save(hot)
-		"""
-		#dbSession.save(t)
-		dbSession.commit()
+        #最近出た名詞貯める
+        """for tn in topNWordList:
+            hot = model.Hot()
+            hot.word = unicode(tn,g_systemencode)
+            dbSession.save(hot)
+        """
+        #dbSession.save(t)
+        dbSession.commit()
 		
-		AppendMarkov(markovWordList,dbSession)
-		#AppendCollocation(markovWordList,dbSession)
+        AppendMarkov(markovWordList,dbSession)
+        #AppendCollocation(markovWordList,dbSession)
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
@@ -71,7 +72,7 @@ def connectUnderScore(array):
 		else:
 			retArray.append(array[i])
 		i+=1
-	print i
+	#print i
 	if(i < len(array)):retArray.append(array[i])
 	if(i+1 < len(array)):retArray.append(array[i+1])
 	return retArray		
@@ -95,51 +96,66 @@ def TakeWordList(sarray):
     return markovWordList,topNWordList
 
 reg = re.compile('http://\S+\s*')
-regTag = re.compile('[.*]')
+regTag = re.compile('\[.*\]')
 regTag2 = re.compile('\*.*\*')
+regBrowsing = re.compile('(B|b)rowsing:.*')
+regRT = re.compile("(RT|QT)\s.*:.*")
+regHashtag = re.compile("#\S*")
 # test内容
 # RemoveCharacter("検索サイト http://www.google.com")->検索サイト
 # RemoveCharacter("検索サイト [mb]")->検索サイト
 # RemoveCharacter("検索サイト *Tw*")->検索サイト
 # しかしこれcrawlerでやるべきだよなぁ
 def RemoveCharacter(str):
-	#余計な記号(http://とか、[hoge]とか)
-	if reg.search(str):
-		print_d2("http cut")
-		str = reg.sub(' ',str)
+    #余計な記号(http://とか、[hoge]とか)
+    if reg.search(str):
+        print_d2("http cut")
+        str = reg.sub('',str)
 	
-	if regTag.search(str):
-		print_d2("tag cut")
-		str = regTag.sub(' ',str)
+    if regTag.search(str):
+        print_d2("tag cut")
+        str = regTag.sub('',str)
 
-	if regTag2.search(str):
-		print_d2("tag2 cut")
-		str = regTag2.sub(' ',str)
+    if regTag2.search(str):
+        print_d2("tag2 cut")
+        str = regTag2.sub('',str)
 
-	return str
+    if regBrowsing.search(str):
+        print_d2("browsing cut")
+        str = regBrowsing.sub('',str)
+
+    if regRT.search(str):
+        print_d2("rt cut")
+        str = regRT.sub('',str)
+
+    if regHashtag.search(str):
+        print_d2("hashtag cut")
+        str = regHashtag.sub('',str)
+
+    return str
 
 import datetime
 def AppendMarkov(markovWordList,session):
-	#マルコフテーブル追加
-	pw = "yystart"
-	markovWordList.append("yyend")
-	q = session.query(model.Markov)
-	for cw in markovWordList:
-		cw = unicode(cw,g_systemencode)
-		session.execute(u"call replace_markov(%s,%s)",(pw,cw))
-		# もしnow = pw, next=cwがあったらそれに1足す
-		"""q2 = q.filter(and_(model.Markov.now == pw,
-			 model.Markov.next == cw))
-		if q2.count() > 0:
-			markov = q2.one()
-			markov.count += 1
-		else:
-			markov = model.Markov()
-			markov.now =  pw
-			markov.next = cw
-		session.save_or_update(markov)"""
-		pw = cw
-	session.commit()
+    #マルコフテーブル追加
+    pw = "yystart"
+    markovWordList.append("yyend")
+    q = session.query(model.Markov)
+    for cw in markovWordList:
+        cw = unicode(cw,g_systemencode)
+        session.execute(u"call replace_markov(%s,%s)",(pw,cw))
+        # もしnow = pw, next=cwがあったらそれに1足す
+        """q2 = q.filter(and_(model.Markov.now == pw,
+            model.Markov.next == cw))
+           if q2.count() > 0:
+            markov = q2.one()
+            markov.count += 1
+        else:
+            markov = model.Markov()
+            markov.now =  pw
+            markov.next = cw
+        session.save_or_update(markov)"""
+        pw = cw
+    session.commit()
 
 # 共起テーブルに追加
 # l : わかち書きした単語のリスト
