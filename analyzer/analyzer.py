@@ -95,43 +95,26 @@ def TakeWordList(sarray):
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
 
-reg = re.compile('http://\S+\s*')
-regTag = re.compile('\[.*\]')
-regTag2 = re.compile('\*.*\*')
-regBrowsing = re.compile('(B|b)rowsing:.*')
-regRT = re.compile("(RT|QT)\s.*:.*")
-regHashtag = re.compile("#\S*")
+replacePattern = [
+    ['http://\S+\s*', '', 'http'],
+    ['\[.*\]', '', 'tag'],
+    ['\*.*\*', '', 'tag2'],
+    ['(B|b)rowsing:.*', '', 'browsing'],
+    ['(RT|QT)\s.*:.*', '', 'RT'],
+    ['#\S*', '', 'hashtag']
+]
+
+for rp in replacePattern:
+    rp[0] = re.compile(rp[0])
 # test内容
-# RemoveCharacter("検索サイト http://www.google.com")->検索サイト
-# RemoveCharacter("検索サイト [mb]")->検索サイト
-# RemoveCharacter("検索サイト *Tw*")->検索サイト
 # しかしこれcrawlerでやるべきだよなぁ
 def RemoveCharacter(str):
     #余計な記号(http://とか、[hoge]とか)
-    if reg.search(str):
-        print_d2("http cut")
-        str = reg.sub('',str)
-	
-    if regTag.search(str):
-        print_d2("tag cut")
-        str = regTag.sub('',str)
-
-    if regTag2.search(str):
-        print_d2("tag2 cut")
-        str = regTag2.sub('',str)
-
-    if regBrowsing.search(str):
-        print_d2("browsing cut")
-        str = regBrowsing.sub('',str)
-
-    if regRT.search(str):
-        print_d2("rt cut")
-        str = regRT.sub('',str)
-
-    if regHashtag.search(str):
-        print_d2("hashtag cut")
-        str = regHashtag.sub('',str)
-
+    for rp in replacePattern:
+        if rp[0].search(str):
+            print_d2(rp[2] + " cut")
+            str = rp[0].sub(rp[1], str)
+    
     return str
 
 import datetime
