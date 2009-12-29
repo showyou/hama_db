@@ -23,7 +23,7 @@ exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./config.json"
 
 dbSession = None
-regOhayou = re.compile(u'おはよう')
+regOhayou = re.compile(u'おはよう|起床')
 regTadaima = re.compile(u'ただいま|帰宅')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
@@ -31,6 +31,8 @@ regMoyashi = re.compile(u'もやし')
 regAthama = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)')
 regWanwan = re.compile(u'わんわん')
 regMukyu = re.compile(u'むきゅー')
+regBaribari = re.compile(u'ﾊﾞﾘﾊﾞﾘ|ばりばり|バリバリ|マジックテープ')
+regGohan = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)(ご飯|ごはん|めし)(あげる|やる|どぞ|どうぞ)')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -170,6 +172,10 @@ def AnalyzeReply(x,session):
     elif regTadaima.search(x.text):
         print_d2("tadaima hit")
         CheckTime("tadaima",datetime.timedelta(minutes=30),x,d,session)
+    elif regGohan.search(x.text):
+        print_d2("gohan hit")
+        d.user = x.user
+        d.text = "gohan"
     elif regTukareta.search(x.text): 
         print_d2("otukare hit")
         d.user = x.user
@@ -182,21 +188,17 @@ def AnalyzeReply(x,session):
         print_d2("moyashi hit")
         d.user = x.user
         d.text = "moyashi"
+    elif regBaribari.search(x.text):
+        print_d2("baribari hit")
+        CheckTime("baribari",datetime.timedelta(minutes=10),x,d,session)
     else:
         match2 = regAthama.match(x.text)
         if match2:
             d.user = x.user
             text = match2.group(2)
 
-            if regMukyu.search(text):
-                print_d2("mukyu hit")
-                d.text = "mukyu"
-            elif regWanwan.search(text):
-                print_d2("wanwan hit")
-                d.text = "wanwan"
-            else:
-                d.text = text
-        print "at:",
+            d.text = 'at'#text
+    	    print "at:",
 		
     # @(英数字)空白 -> user
     # この辺も直す必要ありそうだなぁ。っていうかin_reply_status_idとれるし、そっち使った方が早そう
@@ -227,4 +229,5 @@ def AnalyzeReply(x,session):
         session.save(d)
     session.commit()
 
-quickAnalyze()
+if __name__ == "__main__":
+	quickAnalyze()

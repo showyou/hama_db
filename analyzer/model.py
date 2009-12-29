@@ -26,6 +26,7 @@ class Hot(object):
 class Collocation(object):
 	pass
 
+init = False
 metadata = sqlalchemy.MetaData()
 
 ohayouTime = Table("ohayouTime",metadata,
@@ -69,6 +70,7 @@ twit = Table("twit",metadata,
 				Column('user', types.Unicode(32)),
 				Column('text', types.Unicode(140)),
 				Column('datetime', types.DateTime, default=datetime.now),
+				#Column('replyID', types.String(64), default=-1),
 				Column('isAnalyze', types.SmallInteger, default=False),
 				mysql_engine = 'MyISAM',
 				mysql_charset = 'utf8'
@@ -85,7 +87,7 @@ collocation = Table("collocation",metadata,
 			)
 
 def startSession(conf):
-	
+	global init
 	config = {"sqlalchemy.url":
 			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]+"?charset=utf8","sqlalchemy.echo":"False"}
 	engine = sqlalchemy.engine_from_config(config)
@@ -98,12 +100,14 @@ def startSession(conf):
 					)
 				)
 
-	mapper(Twit, twit)
-	mapper(Hot,  hot)
-	mapper(Markov,markovOneColumn)
-	mapper(RetQueue, retQueue)
-	mapper(OhayouTime, ohayouTime)
-	mapper(Collocation, collocation)
+	if init == False:
+		mapper(Twit, twit)
+		mapper(Hot,  hot)
+		mapper(Markov,markovOneColumn)
+		mapper(RetQueue, retQueue)
+		mapper(OhayouTime, ohayouTime)
+		mapper(Collocation, collocation)
+		init = True
 	metadata.create_all(bind=engine)
 	print ("--start DB Session--")
 	return dbSession

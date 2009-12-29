@@ -8,6 +8,9 @@ from sqlalchemy import MetaData
 from sqlalchemy import Column, MetaData, Table, types
 from datetime import datetime
 
+class Condition(object):
+	pass
+
 class OhayouTime(object):
 	pass
 
@@ -32,13 +35,22 @@ class Top10Words(object):
 class SelectedHotWord(object):
 	pass
 
+init = False
 metadata = sqlalchemy.MetaData()
+
+condition = Table("condition", metadata,
+				Column('id', types.Integer, primary_key=True),
+				Column('name', types.String(10)),
+				Column('value', types.Integer),
+				mysql_engine = 'InnoDB',
+				mysql_charset = 'utf8'
+				)
 
 ohayouTime = Table("ohayouTime",metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('user', types.Unicode(32)),
 				Column('datetime', types.DateTime, default=datetime.now),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 				)
 	
@@ -47,7 +59,7 @@ markovOneColumn = Table("markov",metadata,
 					Column('now', types.Unicode(32)),
 					Column('next', types.Unicode(32)),
 					Column('count', types.Float,default=1),
-					mysql_engine = 'MyISAM',
+					mysql_engine = 'InnoDB',
 					mysql_charset= 'utf8'
 					)
 
@@ -56,7 +68,7 @@ retQueue = Table("retQueue",metadata,
 					Column('id', types.Integer, primary_key=True),
 					Column('user', types.Unicode(32)),
 					Column('text', types.Unicode(140)),
-					mysql_engine = 'MyISAM',
+					mysql_engine = 'InnoDB',
 					mysql_charset = 'utf8'
 			)
 
@@ -65,7 +77,7 @@ hot = Table("hot",metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('word', types.Unicode(140)),
 				Column('datetime',types.DateTime, default=datetime.now),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
 
@@ -75,7 +87,7 @@ collocation = Table("collocation",metadata,
 				Column('b',  types.Unicode(32)),
 				Column('colloc_count', types.Integer,default=1),
 				Column('sentence_count',types.Integer,default=1),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
 
@@ -84,7 +96,7 @@ top10words = Table("top10words", metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('word',  types.Unicode(140)),
 				Column('datetime',types.DateTime, default=datetime.now),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
 
@@ -92,11 +104,12 @@ selectedHotWord = Table("selectedHotWord", metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('word',  types.Unicode(140)),
 				Column('datetime',types.DateTime, default=datetime.now),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
-def startSession(conf):
 
+def startSession(conf):
+	global init
 	config = {"sqlalchemy.url":
 			"mysql://"+conf["dbuser"]+":"+conf["dbpass"]+"@"+conf["dbhost"]+"/"+conf["db"]}
 	engine = sqlalchemy.engine_from_config(config)
@@ -108,14 +121,16 @@ def startSession(conf):
 						bind = engine
 					)
 				)
-
-	mapper(Hot,  hot)
-	mapper(Markov,markovOneColumn)
-	mapper(RetQueue, retQueue)
-	mapper(OhayouTime, ohayouTime)
-	mapper(Collocation, collocation)
-	mapper(Top10Words, top10words)
-	mapper(SelectedHotWord, selectedHotWord)
+	if init == False:
+		mapper(Condition, condition)
+		mapper(Hot,  hot)
+		mapper(Markov,markovOneColumn)
+		mapper(RetQueue, retQueue)
+		mapper(OhayouTime, ohayouTime)
+		mapper(Collocation, collocation)
+		mapper(Top10Words, top10words)
+		mapper(SelectedHotWord, selectedHotWord)
+		init = True
 	metadata.create_all(bind=engine)
 	print ("--start DB Session--")
 	return dbSession

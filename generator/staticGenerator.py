@@ -19,7 +19,7 @@ import string
 import sys
 import simplejson
 
-def quickGenerate():
+def staticGenerate():
     #sched = scheduler.Scheduler()
     #sched.schedule()
     u = LoadUserData(conf_path)
@@ -28,10 +28,22 @@ def quickGenerate():
         if( sched.has_schedule() ):
             str = doSchedule(sched)
     else:
-        rep = dbSession.query(model.RetQueue)
-        if( rep.count() > 0 ):
+        q = dbSession.query(model.Condition)
+        q2 = q.filter(model.Condition.name=="hunger")
+        if q.count() == 0:
+            c = model.Condition()
+            c.name = "hunger"
+            c.value ="1000"
+            dbSession.save(c)
+            dbSession.commit()
+        else:
+            cond = q2.one().value
+            print cond
+            sendMessage( u"おなかすいたー" )
+        """if( rep.count() > 0 ):
             str = reply.do(rep,dbSession)
             sendMessage(str)
+        """
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -55,4 +67,4 @@ def sendMessage(str):
     tw.put(str)
 
 if __name__ == "__main__":
-	quickGenerate()
+	staticGenerate()
