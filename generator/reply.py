@@ -37,6 +37,8 @@ def do(reply,session):
         elif r.text == 'wanwan':
             s = random.choice((u'うー、わんわん',u'わんわん'))
             sentence = "@"+r.user+" "+s
+        elif r.text == 'mayuri':
+            sentence = "@"+r.user+u" トゥットゥルー♪"
         elif r.text == 'gohan':
             sentence = ".@"+r.user
             l2num = 1

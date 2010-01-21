@@ -33,6 +33,7 @@ regWanwan = re.compile(u'わんわん')
 regMukyu = re.compile(u'むきゅー')
 regBaribari = re.compile(u'ﾊﾞﾘﾊﾞﾘ|ばりばり|バリバリ|マジックテープ')
 regGohan = re.compile(u'(@yuka_|@ゆうか|@ゆーか)(.*)(ご飯|ごはん|めし)(あげる|やる|どぞ|どうぞ)')
+regMayuri = re.compile(u'トゥットゥルー')
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -188,6 +189,10 @@ def AnalyzeReply(x,session):
         print_d2("moyashi hit")
         d.user = x.user
         d.text = "moyashi"
+    elif regMayuri.search(x.text):
+        print_d2("mayuri hit")
+        d.user = x.user
+        d.text = "mayuri"
     elif regBaribari.search(x.text):
         print_d2("baribari hit")
         CheckTime("baribari",datetime.timedelta(minutes=10),x,d,session)
