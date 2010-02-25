@@ -146,7 +146,7 @@ def AppendCollocation(l,session):
 	q = session.query(model.Collocation)
 	for i in range(len(l)-1):
 		a = unicode(l[i],g_systemencode,'ignore')
-		for j in range(i+1,len(l)-1):
+		for j in range(i+1,len(l)):
 			b = unicode(l[j],g_systemencode,'ignore')
 			# もしa = a, b=bがあったらそれに1足す
 			q2 = q.filter(and_(model.Collocation.a == a ,
