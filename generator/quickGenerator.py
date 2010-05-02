@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama_db/"
+exec_path = "/home/yuki/gitrep/python/hama_tweepy"
 conf_path = exec_path+"./config.json"
 
 import sys
 sys.path.insert(0,exec_path)
 
-from common import twitterscraping
+from common import auth_api
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
@@ -47,12 +47,14 @@ def LoadUserData(fileName):
 
 # Twitterにメッセージ投げる
 def sendMessage(str):
-    userData = LoadUserData(conf_path)
-    tw = twitterscraping.Twitter(userData)
+    userdata = LoadUserData(conf_path)
+    tw = auth_api.connect(userdata["consumer_token"],
+        userdata["consumer_secret"], exec_path+"/common/")
     str = string.replace(str,'yystart','')
+    str = string.replace(str,'yyend','')
     
     #print(str)
-    tw.put(str)
+    tw.update_status(str)
 
 if __name__ == "__main__":
 	quickGenerate()

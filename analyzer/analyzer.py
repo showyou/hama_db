@@ -5,7 +5,7 @@
 # 1.マルコフ連鎖テーブル
 # 2.最近10min間のホットな単語リスト
 # 3.ればreplyリストに入れる
-
+import sys
 import mecab
 import datetime
 import re
@@ -13,16 +13,15 @@ from sqlalchemy import and_
 
 import model
 import simplejson
-import psyco
-psyco.full()
+#import psyco
+#psyco.full()
 
-mecabPath = "/usr/lib/libmecab.so"
-g_mecabencode = "euc-jp"
-g_systemencode = "utf-8"
+mecabPath = "/usr/lib/libmecab.so.1"
+g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+exec_path = "/home/yuki/gitrep/python/hama_tweepy"
+conf_path = exec_path+"/common/config.json"
 
 dbSession = None
 
@@ -46,7 +45,7 @@ def analyze():
         t_enc = t.text.encode(g_mecabencode,'ignore')
         sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
         sarray2 = connectUnderScore(sarray)
-        markovWordList,topNWordList = TakeWordList(sarray)
+        markovWordList,topNWordList = TakeWordList(sarray2)
         print len(markovWordList)
 		
         #最近出た名詞貯める
@@ -120,12 +119,18 @@ def RemoveCharacter(str):
 import datetime
 def AppendMarkov(markovWordList,session):
     #マルコフテーブル追加
-    pw = "yystart"
+    pw = ""
+    nw = "yystart"
     markovWordList.append("yyend")
     q = session.query(model.Markov)
     for cw in markovWordList:
         cw = unicode(cw,g_systemencode)
-        session.execute(u"call replace_markov(%s,%s)",(pw,cw))
+        try:
+            session.execute(u'call replace_markov("%s","%s","%s")'\
+                            % (pw,nw,cw) )
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+
         # もしnow = pw, next=cwがあったらそれに1足す
         """q2 = q.filter(and_(model.Markov.now == pw,
             model.Markov.next == cw))
@@ -137,7 +142,8 @@ def AppendMarkov(markovWordList,session):
             markov.now =  pw
             markov.next = cw
         session.save_or_update(markov)"""
-        pw = cw
+        pw = nw
+        nw = cw
     session.commit()
 
 # 共起テーブルに追加

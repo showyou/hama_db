@@ -26,7 +26,8 @@ def do(reply,session):
             s = random.choice((u'ちゅっちゅー<3',u'にゃ〜',u'にゃん♪',u'うふふー'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'at':
-            s = random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'ずこー'))
+            s = \
+            random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'なあにー？', u'ずこー'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
             s = u'だれがもやしですか'

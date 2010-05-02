@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+exec_path = "/home/yuki/gitrep/python/hama_tweepy/"
+conf_path = exec_path+"./common/config.json"
 
 import sys
 sys.path.insert(0,exec_path)
 
-from common import twitterscraping
+from common import auth_api
 import vsearch
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
@@ -35,12 +35,12 @@ def generator():
 		if( rep.count() > 0 ):
 			sentence = reply.do(rep,dbSession)
 		else:
-			try:
+			#try:
 				# 予定もreplyもないならhotでも取り出してマルコフ連鎖する
-				str,sl = CreateMarkovSentenceWithHot(dbSession)
-			except:
-				print "Unexpected error:", sys.exc_info()[0]
-				str,sl = vsearch.depthFirstSearch(dbSession,u"yystart",u"yyend",10)
+			#	str,sl = CreateMarkovSentenceWithHot(dbSession)
+			#except:
+			#	print "Unexpected error:", sys.exc_info()[0]
+			str,sl = vsearch.depthFirstSearch2(dbSession,u"yystart",u"yyend",15)
 			print_d(str)
 			print_d(len(sl))
 			asl = afterEffect(sl)
@@ -53,32 +53,36 @@ def generator():
 # >>> afterEffect([u"りんご",u"は",u"青い",u"。"])
 # [u"りんご",u"は",u"青い,u"です。"]
 def afterEffect(sl):
-	asl = []
-	for i in range(0,len(sl)):
-		appendFlag = True 
-		if sl[i] == u"。" and i > 0:
-			if(sl[i-1] != u"です"):
-				asl.append(u"です。")
-				appendFlag = False
-		elif i == len(sl)-1 and sl[i] != u"。":
-			asl.append(u"です。")
-			appendFlag = False
-		elif i > 0:
-			asl.append(wstrcat(sl[i-1],sl[i]))
-			appendFlag = False
+    asl = []
+    if len(sl) < 3: return []
 
-		if appendFlag :
-			asl.append(sl[i])
-	return asl
+    for i in range(0,len(sl)):
+        appendFlag = True
+        if i > 0:
+            i2 = i-1
+            if sl[i] == u"。" :
+                if(sl[i2] != u"です" and sl[i2] != u"です。" \
+                    and sl[i2] != u"。"):
+                    asl.append(u"です。")
+                    appendFlag = False
+            elif sl[i2] != u"。" and sl[i2] != u"です。" and sl[i2] != u"です" \
+                and i ==len(sl)-1:
+                asl.append(u"です。")
+                appendFlag = False
+            else:
+                asl.append(wstrcat(sl[i-1],sl[i]))
+                appendFlag = False
+
+        if appendFlag :
+            asl.append(sl[i])
+    return asl
 
 """
 	アルファベットが並んだら空白開ける
 """
 def wstrcat(a,b):
-	#if (a.isalnum() and b.isalnum()):
-	#	result = " " + b
-	#else:
-	result = b
+	if (a == u"@"): result = b + " "
+	else:	result = b
 	return result
 
 def CreateMarkovSentenceWithHot(session):
@@ -109,14 +113,15 @@ def LoadUserData(fileName):
 
 # Twitterにメッセージ投げる
 def sendMessage(str):
-	userData = LoadUserData(conf_path)
-	tw = twitterscraping.Twitter(userData)
+	userdata = LoadUserData(conf_path)
+	tw = auth_api.connect(userdata["consumer_token"],
+        userdata["consumer_secret"], exec_path+"/common/")
 	str = string.replace(str,'yystart','')
 	str = string.replace(str,'yyend','')
 	if g_debug :
 		print(str)
 	else:
-		tw.put(str)
+		tw.update_status(str)
 
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()

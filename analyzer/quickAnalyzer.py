@@ -13,17 +13,16 @@ from sqlalchemy import and_
 
 import picklefile
 import simplejson
-mecabPath = "/usr/lib/libmecab.so"
-g_mecabencode = "euc-jp"
-g_systemencode = "utf-8"
+mecabPath = "/usr/lib/libmecab.so.1"
+g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-homepath = "/home/yuki/public_git/hama_db/analyzer/"
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+homepath = "/home/yuki/gitrep/python/hama_tweepy/analyzer/"
+exec_path = "/home/yuki/gitrep/python/hama_tweepy"
+conf_path = exec_path+"/common/config.json"
 
 dbSession = None
-regOhayou = re.compile(u'おはよう|起床')
+regOhayou = re.compile(u'おはよう|起床|オハヨウ')
 regTadaima = re.compile(u'ただいま|帰宅')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
