@@ -1,8 +1,0 @@
-{
-	"user": "user",
-	"pass": "password",
-	"dbuser": "username",
-	"dbpass": "password",
-	"dbhost": "hostname",
-	"db":	  "database"
-}
