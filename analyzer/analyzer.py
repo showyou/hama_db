@@ -20,7 +20,7 @@ mecabPath = "/usr/lib/libmecab.so.1"
 g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-exec_path = "/home/yuki/gitrep/python/hama_tweepy"
+exec_path = "/home/yuki/public_git/hama_db"
 conf_path = exec_path+"/common/config.json"
 
 dbSession = None

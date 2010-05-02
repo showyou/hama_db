@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/gitrep/python/hama_tweepy"
+exec_path = "/home/yuki/public_git/hama_db"
 conf_path = exec_path+"/common/config.json"
 
 import sys
