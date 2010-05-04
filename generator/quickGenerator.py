@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+exec_path = "/home/yuki/public_git/hama_db"
+conf_path = exec_path+"/common/config.json"
 
 import sys
 sys.path.insert(0,exec_path)
@@ -40,7 +40,8 @@ def LoadUserData(fileName):
         file = open(fileName,'r')
         a = simplejson.loads(file.read())
         file.close()
-    except:
+    except IOError:
+        print "IOError"
         sys.exit(1)
     return a
 
@@ -53,7 +54,6 @@ def sendMessage(str):
     str = string.replace(str,'yystart','')
     str = string.replace(str,'yyend','')
     
-    #print(str)
     tw.update_status(str)
 
 if __name__ == "__main__":

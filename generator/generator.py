@@ -100,15 +100,16 @@ def CreateMarkovSentenceWithHot(session):
 	return str,sl
 
 def LoadUserData(fileName):
-	#ファイルを開いて、データを読み込んで変換する
-	#データ形式は(user,password)
-	try:
-		file = open(fileName,'r')
-		a = simplejson.loads(file.read())
-		file.close()
-	except:
-		sys.exit(1)
-	return a
+    #ファイルを開いて、データを読み込んで変換する
+    #データ形式は(user,password)
+    try:
+        file = open(fileName,'r')
+        a = simplejson.loads(file.read())
+        file.close()
+    except IOError:
+        print "LoadUserData error" 
+        sys.exit(1)
+    return a
 
 
 # Twitterにメッセージ投げる
