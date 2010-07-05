@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+exec_path = "/home/yuki/public_git/hama_db"
+conf_path = exec_path+"/common/config.json"
 
 import sys
 sys.path.insert(0,exec_path)
 
-from common import twitterscraping
+from common import auth_api
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
@@ -40,19 +40,21 @@ def LoadUserData(fileName):
         file = open(fileName,'r')
         a = simplejson.loads(file.read())
         file.close()
-    except:
+    except IOError:
+        print "IOError"
         sys.exit(1)
     return a
 
 
 # Twitterにメッセージ投げる
 def sendMessage(str):
-    userData = LoadUserData(conf_path)
-    tw = twitterscraping.Twitter(userData)
+    userdata = LoadUserData(conf_path)
+    tw = auth_api.connect(userdata["consumer_token"],
+        userdata["consumer_secret"], exec_path+"/common/")
     str = string.replace(str,'yystart','')
+    str = string.replace(str,'yyend','')
     
-    #print(str)
-    tw.put(str)
+    tw.update_status(str)
 
 if __name__ == "__main__":
 	quickGenerate()

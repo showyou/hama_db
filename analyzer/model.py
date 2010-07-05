@@ -40,10 +40,12 @@ ohayouTime = Table("ohayouTime",metadata,
 	
 markovOneColumn = Table("markov",metadata,
 					Column('id', types.Integer, primary_key=True),
+                    Column('prev', types.Unicode(32)),
 					Column('now', types.Unicode(32)),
 					Column('next', types.Unicode(32)),
 					Column('count', types.Float,default=1),
-					mysql_engine = 'MyISAM',
+				    Column('lastupdate', types.DateTime, default=datetime.now),
+					mysql_engine = 'InnoDB',
 					mysql_charset= 'utf8'
 					)
 
@@ -65,14 +67,14 @@ hot = Table("hot",metadata,
 				mysql_charset = 'utf8'
 			)
 
-twit = Table("twit",metadata,
+twit = Table("tweet",metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('user', types.Unicode(32)),
 				Column('text', types.Unicode(140)),
 				Column('datetime', types.DateTime, default=datetime.now),
-				#Column('replyID', types.String(64), default=-1),
+				Column('replyID', types.String(64), default=-1),
 				Column('isAnalyze', types.SmallInteger, default=False),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
 
@@ -82,7 +84,7 @@ collocation = Table("collocation",metadata,
 				Column('b',  types.Unicode(32)),
 				Column('colloc_count', types.Integer,default=1),
 				Column('sentence_count',types.Integer,default=1),
-				mysql_engine = 'MyISAM',
+				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
 

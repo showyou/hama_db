@@ -4,7 +4,7 @@
 #sqlalchemyで深さ優先探索
 import model
 import simplejson
-
+from sqlalchemy import and_
 from shuffleByCount import shuffleByCount
 
 g_depthMax = 30 # 最大探索深さ(=単語数)
@@ -13,10 +13,55 @@ conf_path = exec_path+"./config.json"
 
 
 def getAuthData(fileName):
-	file = open(fileName,'r')
-	a = simplejson.loads(file.read())
-	file.close()
-	return a
+    file = open(fileName,'r')
+    a = simplejson.loads(file.read())
+    file.close()
+    return a
+
+def dfs2(session, prevWord, startWord, endWord, depthMax):
+    type1 = model.Markov.now	
+    type2 = model.Markov.prev
+    q = session.query(model.Markov)
+    node = {"text":startWord,"prev":prevWord, "visit":False}
+    stack =[] 
+    depth = 1 # 探索深さ
+    
+    if node["text"] == endWord:
+        return [ node["text"] ]
+    elif 2 >= depthMax:
+        return []
+    else:
+        depth += 1
+        f = q.filter(and_(type1==node["text"],type2==node["prev"]))
+        tmpList = []
+        for fq in f:
+            #if reverse:
+            #    tmpList.append({"name":fq.now,"count":fq.count})
+            #else:
+            tmpList.append({"name":fq.next,"count":fq.count})
+        shuffleList = shuffleByCount(tmpList)
+        for i in shuffleList:
+            resultList = dfs2(session, node["text"], i["name"], endWord,
+                            depthMax-1 )
+            if resultList != []:
+                resultList.insert(0, node["text"])
+                return resultList
+        else: return []
+              
+def depthFirstSearch2(session, startWord, endWord, depthMax, reverse=False):
+    #print ("ans")
+    sentence = ""
+    selectwordList = []
+
+    stack = dfs2(session, u"", startWord, endWord, depthMax)
+    if reverse : 
+        stack.reverse()
+        stack.pop()
+
+    for s in stack:
+        sentence += s
+        selectwordList.append(s)
+    return sentence,selectwordList
 
 def depthFirstSearch(session,startWord,endWord,depthMax,reverse=False):
 	if reverse: type = model.Markov.next

@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-exec_path = "/Users/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
+exec_path = "/home/yuki/public_git/hama_db"
+conf_path = exec_path+"/common/config.json"
 
 import sys
 sys.path.insert(0,exec_path)
+from common import auth_api
 
-from common import twitterscraping
 import simplejson
 import model
 import datetime
-import toDate
 from   sqlalchemy import and_
 
 
@@ -19,7 +18,6 @@ from   sqlalchemy import and_
 g_ngUser = [ 
 	"ha_ma", "donsuke", "yuka_" 
 ]
-
 
 
 dbSession = None
@@ -30,39 +28,41 @@ def getAuthData(fileName):
 	file.close()
 	return a
 
+
 # NGUserならTrue そうでないならFalse 
 def isNGUser(user):
 	for u in g_ngUser:
 		if u == user: return True
 	return False
 
+
 def main():
 
     # twitterから発言を取ってきてDBに格納する
     userdata = getAuthData(conf_path)
-    tw = twitterscraping.Twitter(userdata)
-    l = tw.get("yuka_")
+    tw = auth_api.connect(userdata["consumer_token"],
+        userdata["consumer_secret"], exec_path+"/common/")
+    
+    l = tw.home_timeline()
     dbSession = model.startSession(userdata)
 
-    #for u in l:
-        #twList = tw.getWithUser(u) # lastTime以降の発言全部取得
-
-    for td in l:
-        if td[0] == userdata["user"]:continue
-        d = toDate.toDate(td[2],"%a %b %d %H:%M:%S +0000 %Y")
-        query = dbSession.query(model.Twit).filter(and_(model.Twit.datetime==d,model.Twit.user==td[0]))
+    for s in l:
+        #if s.author.screen_name == userdata["user"]:continue
+        jTime = s.created_at + datetime.timedelta(hours = 9)
+        name = unicode(s.user.screen_name)
+        query = dbSession.query(model.Status).filter(
+            and_(model.Status.datetime== jTime, 
+                    model.Status.user==name ))
         if( query.count() > 0 ): continue
-        if( isNGUser(td[0]) ): continue
-        t = model.Twit()
-        t.user = td[0]
-        t.text = td[1]
-        t.datetime = d
-        t.replyID = td[5]
-        """if len(td) > 5:
-            t.replyID = td[5]
-        else:
-            t.replyID = -1"""
-        dbSession.save(t)
+        if( isNGUser(name) ): continue
+        t = model.Status()
+        t.user = name
+        t.text = s.text
+        t.datetime = jTime
+        t.replyID = s.in_reply_to_status_id
+        t.tweetID = s.id
+        #print s.id
+        dbSession.add(t)
         dbSession.commit()
 
 if __name__ == "__main__":

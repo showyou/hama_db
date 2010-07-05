@@ -1,0 +1,8 @@
+{
+	"db": "dbname",
+	"dbuser": "user",
+	"dbpass": "pass",
+	"dbhost": "dbhostname",
+	"consumer_token": "enter_oauth_token",
+	"consumer_secret": "enter_oauth_secret"
+}	
