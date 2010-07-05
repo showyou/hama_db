@@ -37,28 +37,35 @@ def analyze():
     dbSession = model.startSession(userdata)
     # 前回の更新時間から現在までのデータを入手する
     q = dbSession.query(model.Twit)
-    tq = q.filter(model.Twit.isAnalyze == 1) 
-    for t in tq:
-        #1発言毎
-        t.text = RemoveCharacter(t.text)
-        t.isAnalyze = 2 
-        t_enc = t.text.encode(g_mecabencode,'ignore')
-        sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
-        sarray2 = connectUnderScore(sarray)
-        markovWordList,topNWordList = TakeWordList(sarray2)
-        print len(markovWordList)
-		
-        #最近出た名詞貯める
-        """for tn in topNWordList:
-            hot = model.Hot()
-            hot.word = unicode(tn,g_systemencode)
-            dbSession.save(hot)
-        """
-        #dbSession.save(t)
+
+    # ToDo:ここ、100件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
+    while(true):
+        tq = q.filter(model.Twit.isAnalyze == 1).fetch(100)
+        if len(tq) == 0: break
+        for t in tq:
+            #1発言毎
+            t.text = RemoveCharacter(t.text)
+            t.isAnalyze = 2 
+            t_enc = t.text.encode(g_mecabencode,'ignore')
+            sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
+            sarray2 = connectUnderScore(sarray)
+            markovWordList,topNWordList = TakeWordList(sarray2)
+            print len(markovWordList)
+            
+            #最近出た名詞貯める
+            """for tn in topNWordList:
+                hot = model.Hot()
+                hot.word = unicode(tn,g_systemencode)
+                dbSession.save(hot)
+            """
+            dbSession.save(t)
+
+            AppendMarkov(markovWordList, dbSession, insertData)
+            #AppendCollocation(markovWordList,dbSession)
+        
+        insertMarkovData2DB(dbSession, insertData)
         dbSession.commit()
-		
-        AppendMarkov(markovWordList,dbSession)
-        #AppendCollocation(markovWordList,dbSession)
+
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
@@ -116,22 +123,34 @@ def RemoveCharacter(str):
     
     return str
 
+
 import datetime
-def AppendMarkov(markovWordList,session):
+def AppendMarkov(markovWordList, session, insertData):
     #マルコフテーブル追加
+    #DBに直接入れるんじゃなくて、一旦メモリにでも保管
+    # pw = previous word cw = current word nw = next word
     pw = ""
     nw = "yystart"
     markovWordList.append("yyend")
     q = session.query(model.Markov)
     for cw in markovWordList:
         cw = unicode(cw,g_systemencode)
+        insertData[(pw, cw, nw)]+=1
+        # もしnow = pw, next=cwがあったらそれに1足す
+        pw = nw
+        nw = cw
+        
+
+def insertMarkovData2DB(dbSession, insertData):
+    # matope風に一旦ファイル書き出し→一括書き込みの方が早いかも
+    # ベンチ必要
+    for grams in insertData.key():
         try:
-            session.execute(u'call replace_markov("%s","%s","%s")'\
-                            % (pw,nw,cw) )
+            session.execute(u'call replace_markov("%s","%s","%s","%d")'\
+                            % grams, insertData[grams] )
         except:
             print "Unexpected error:", sys.exc_info()[0]
 
-        # もしnow = pw, next=cwがあったらそれに1足す
         """q2 = q.filter(and_(model.Markov.now == pw,
             model.Markov.next == cw))
            if q2.count() > 0:
@@ -142,9 +161,7 @@ def AppendMarkov(markovWordList,session):
             markov.now =  pw
             markov.next = cw
         session.save_or_update(markov)"""
-        pw = nw
-        nw = cw
-    session.commit()
+
 
 # 共起テーブルに追加
 # l : わかち書きした単語のリスト
