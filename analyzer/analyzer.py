@@ -13,6 +13,8 @@ from sqlalchemy import and_
 
 import model
 import simplejson
+
+from collections import defaultdict
 #import psyco
 #psyco.full()
 
@@ -31,6 +33,7 @@ def getAuthData(fileName):
 	file.close()
 	return a
 
+
 def analyze():
     # dbからデータを読み込む
     userdata = getAuthData(conf_path)
@@ -39,17 +42,18 @@ def analyze():
     q = dbSession.query(model.Twit)
 
     # ToDo:ここ、100件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
+    insertData = defaultdict(int)
     while(true):
         tq = q.filter(model.Twit.isAnalyze == 1).fetch(100)
         if len(tq) == 0: break
         for t in tq:
             #1発言毎
-            t.text = RemoveCharacter(t.text)
+            t.text = removeCharacter(t.text)
             t.isAnalyze = 2 
             t_enc = t.text.encode(g_mecabencode,'ignore')
             sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
             sarray2 = connectUnderScore(sarray)
-            markovWordList,topNWordList = TakeWordList(sarray2)
+            markovWordList,topNWordList = takeWordList(sarray2)
             print len(markovWordList)
             
             #最近出た名詞貯める
@@ -60,8 +64,8 @@ def analyze():
             """
             dbSession.save(t)
 
-            AppendMarkov(markovWordList, dbSession, insertData)
-            #AppendCollocation(markovWordList,dbSession)
+            appendMarkov(markovWordList, dbSession, insertData)
+            #appendCollocation(markovWordList,dbSession)
         
         insertMarkovData2DB(dbSession, insertData)
         dbSession.commit()
@@ -83,8 +87,9 @@ def connectUnderScore(array):
 	if(i+1 < len(array)):retArray.append(array[i+1])
 	return retArray		
 
+
 # 分解した品詞列から単語群と重要単語を抜き出す
-def TakeWordList(sarray):	
+def takeWordList(sarray):	
     markovWordList = []
     topNWordList = []
     for sa in sarray:
@@ -101,6 +106,8 @@ def TakeWordList(sarray):
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
 
+
+
 replacePattern = [
     ['http://\S+\s*', '', 'http'],
     ['\[.*\]', '', 'tag'],
@@ -112,9 +119,11 @@ replacePattern = [
 
 for rp in replacePattern:
     rp[0] = re.compile(rp[0])
+
+
 # test内容
 # しかしこれcrawlerでやるべきだよなぁ
-def RemoveCharacter(str):
+def removeCharacter(str):
     #余計な記号(http://とか、[hoge]とか)
     for rp in replacePattern:
         if rp[0].search(str):
@@ -125,7 +134,7 @@ def RemoveCharacter(str):
 
 
 import datetime
-def AppendMarkov(markovWordList, session, insertData):
+def appendMarkov(markovWordList, session, insertData):
     #マルコフテーブル追加
     #DBに直接入れるんじゃなくて、一旦メモリにでも保管
     # pw = previous word cw = current word nw = next word
@@ -165,7 +174,7 @@ def insertMarkovData2DB(dbSession, insertData):
 
 # 共起テーブルに追加
 # l : わかち書きした単語のリスト
-def AppendCollocation(l,session):
+def appendCollocation(l,session):
 	q = session.query(model.Collocation)
 	for i in range(len(l)-1):
 		a = unicode(l[i],g_systemencode,'ignore')
