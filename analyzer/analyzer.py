@@ -41,10 +41,12 @@ def analyze():
     # 前回の更新時間から現在までのデータを入手する
     q = dbSession.query(model.Twit)
 
-    # ToDo:ここ、100件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
-    insertData = defaultdict(int)
-    while(true):
-        tq = q.filter(model.Twit.isAnalyze == 1).fetch(100)
+    # ToDo:ここ、1000件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
+
+    while(True):
+        insertData = defaultdict(int)
+        tq = q.filter(model.Twit.isAnalyze == 1)[:1000]
+        i = 0
         if len(tq) == 0: break
         for t in tq:
             #1発言毎
@@ -62,13 +64,15 @@ def analyze():
                 hot.word = unicode(tn,g_systemencode)
                 dbSession.save(hot)
             """
-            dbSession.save(t)
-
+            dbSession.update(t)
             appendMarkov(markovWordList, dbSession, insertData)
             #appendCollocation(markovWordList,dbSession)
-        
-        insertMarkovData2DB(dbSession, insertData)
-        dbSession.commit()
+            i+= 1
+            if i >= 1000:
+                insertMarkovData2DB(dbSession, insertData)
+                dbSession.commit()
+                insertData = defaultdict(int)
+                i = 0
 
 
 # A,_,B->A_Bに直す
@@ -151,14 +155,15 @@ def appendMarkov(markovWordList, session, insertData):
         
 
 def insertMarkovData2DB(dbSession, insertData):
-    # matope風に一旦ファイル書き出し→一括書き込みの方が早いかも
-    # ベンチ必要
-    for grams in insertData.key():
+    #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
+    #ベンチ必要
+    for grams in insertData.keys():
         try:
-            session.execute(u'call replace_markov("%s","%s","%s","%d")'\
-                            % grams, insertData[grams] )
+            dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
+                           % (grams +(insertData[grams],) ) )
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            print grams
+            print "Unexpected error:", sys.exc_info()
 
         """q2 = q.filter(and_(model.Markov.now == pw,
             model.Markov.next == cw))
