@@ -154,10 +154,15 @@ def appendMarkov(markovWordList, session, insertData):
         nw = cw
         
 
+import pytc
+import cPickle as pickle
 def insertMarkovData2DB(dbSession, insertData):
     #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
     #ベンチ必要
+    hdb = pytc.HDB('*', pytc.HDBOWRITER | pytc.HDBOCREAT)
     for grams in insertData.keys():
+        key = pickle.dumps(grams)
+        hdb[key] = str(insertData[grams])
         try:
             dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
                            % (grams +(insertData[grams],) ) )
