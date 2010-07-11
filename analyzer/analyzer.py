@@ -143,15 +143,15 @@ def appendMarkov(markovWordList, session, insertData):
     #DBに直接入れるんじゃなくて、一旦メモリにでも保管
     # pw = previous word cw = current word nw = next word
     pw = ""
-    nw = "yystart"
+    cw = "yystart"
     markovWordList.append("yyend")
     q = session.query(model.Markov)
-    for cw in markovWordList:
-        cw = unicode(cw,g_systemencode)
+    for nw in markovWordList:
+        nw = unicode(nw,g_systemencode)
         insertData[(pw, cw, nw)]+=1
         # もしnow = pw, next=cwがあったらそれに1足す
-        pw = nw
-        nw = cw
+        pw = cw
+        cw = nw
         
 
 import pytc
@@ -170,6 +170,7 @@ def insertMarkovData2DB(dbSession, insertData):
 
         key = pickle.dumps(gram)
         indexKey = pickle.dumps(indexKeyGram)
+        #print "iKG", indexKeyGram, indexKey
         value = gram[2]
         db.addint(key,insertData[gram])
         if not (invertIndex.has_key(indexKey)):
