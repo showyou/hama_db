@@ -159,18 +159,35 @@ import cPickle as pickle
 def insertMarkovData2DB(dbSession, insertData):
     #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
     #ベンチ必要
-    hdb = pytc.HDB('*', pytc.HDBOWRITER | pytc.HDBOCREAT)
-    for grams in insertData.keys():
-        key = pickle.dumps(grams)
-        hdb[key] = str(insertData[grams])
-        try:
-            dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
-                           % (grams +(insertData[grams],) ) )
-        except:
-            print grams
-            print "Unexpected error:", sys.exc_info()
 
-        """q2 = q.filter(and_(model.Markov.now == pw,
+    db = pytc.BDB('markov.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    invertIndex = {}
+    #今回はprev, nowに対するnextのテーブルだけど、now,nextに対してprevを得る奴も必要かも
+    for gram, count in insertData.iteritems():
+        #print gram, count
+        
+        indexKeyGram = (gram[0], gram[1])
+
+        key = pickle.dumps(gram)
+        indexKey = pickle.dumps(indexKeyGram)
+        value = gram[2]
+        db.addint(key,insertData[gram])
+        if not (invertIndex.has_key(indexKey)):
+            invertIndex[indexKey] = set([ value ])
+        else:
+            invertIndex[indexKey].add(value)
+       
+        """
+        try:
+            #pass
+
+            dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
+                           % (gram +(count,) ) )
+        except:
+            print gram
+            print "Unexpected error:", sys.exc_info()
+        #
+            q2 = q.filter(and_(model.Markov.now == pw,
             model.Markov.next == cw))
            if q2.count() > 0:
             markov = q2.one()
@@ -180,7 +197,21 @@ def insertMarkovData2DB(dbSession, insertData):
             markov.now =  pw
             markov.next = cw
         session.save_or_update(markov)"""
+    #db.close()
+    
 
+    # 転置インデックス書き込む
+    
+    db = pytc.BDB('invertIndex.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    for key, value in invertIndex.iteritems():
+        if db.has_key(key):
+            tmpValue = pickle.loads(db[key])
+            tmpValue.update(value)
+        else:
+            tmpValue = value
+        db[key] = pickle.dumps( tmpValue )
+    db.close()
+    
 
 # 共起テーブルに追加
 # l : わかち書きした単語のリスト

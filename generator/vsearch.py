@@ -18,11 +18,12 @@ def getAuthData(fileName):
     file.close()
     return a
 
-def dfs2(session, prevWord, startWord, endWord, depthMax):
+def dfs2(session, prevWord, startWord, endWord, depthMax, isFirst = False):
     type1 = model.Markov.now	
     type2 = model.Markov.prev
     q = session.query(model.Markov)
     node = {"text":startWord,"prev":prevWord, "visit":False}
+    print node
     stack =[] 
     depth = 1 # 探索深さ
     
@@ -32,7 +33,10 @@ def dfs2(session, prevWord, startWord, endWord, depthMax):
         return []
     else:
         depth += 1
-        f = q.filter(and_(type1==node["text"],type2==node["prev"]))
+        if isFirst == True:
+            f = q.filter(type2==node["text"])[:1000]
+        else:
+            f = q.filter(and_(type1==node["text"],type2==node["prev"]))
         tmpList = []
         for fq in f:
             #if reverse:
@@ -41,6 +45,7 @@ def dfs2(session, prevWord, startWord, endWord, depthMax):
             tmpList.append({"name":fq.next,"count":fq.count})
         shuffleList = shuffleByCount(tmpList)
         for i in shuffleList:
+            print "i", i["name"]
             resultList = dfs2(session, node["text"], i["name"], endWord,
                             depthMax-1 )
             if resultList != []:
@@ -53,7 +58,10 @@ def depthFirstSearch2(session, startWord, endWord, depthMax, reverse=False):
     sentence = ""
     selectwordList = []
 
-    stack = dfs2(session, u"", startWord, endWord, depthMax)
+    if reverse:
+        stack = dfs2(session, u"", startWord, endWord, depthMax)
+    else:
+        stack = dfs2(session, u"", startWord, endWord, depthMax, True)
     if reverse : 
         stack.reverse()
         stack.pop()
