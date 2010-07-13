@@ -53,7 +53,7 @@ def quickAnalyze():
 	# 前回の更新時間から現在までのデータを入手する
 
 	q = dbSession.query(model.Twit)
-	tq = q.filter(model.Twit.isAnalyze == 0)
+	tq = q.filter(model.Twit.isAnalyze == 0)[:10000]
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
