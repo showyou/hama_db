@@ -45,6 +45,7 @@ def LoadUserData(fileName):
         sys.exit(1)
     return a
 
+
 def quickAnalyze():
 	# dbからデータを読み込む
 	u = LoadUserData(conf_path)
@@ -69,7 +70,9 @@ def quickAnalyze():
 			hot = model.Hot()
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
+        dbSession.update(t)
 		dbSession.commit()
+
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
@@ -86,6 +89,7 @@ def connectUnderScore(array):
 	if(i < len(array)):retArray.append(array[i])
 	if(i+1 < len(array)):retArray.append(array[i+1])
 	return retArray		
+
 
 # 分解した品詞列から単語群と重要単語を抜き出す
 def TakeWordList(sarray):	
@@ -104,6 +108,7 @@ def TakeWordList(sarray):
                 if sa2[0] != "yystart" and sa2[0] != "yyend":
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
+
 
 # test内容
 # RemoveCharacter("検索サイト http://www.google.com")->検索サイト
@@ -130,9 +135,11 @@ def RemoveCharacter(str):
 
 	return str
 
+
 def print_d2(str):
 	if _debug:
 		print unicode(str,g_systemencode,'ignore').encode(g_outencode,'ignore'),
+
 
 def CheckTime(type,timespan,x,d,session):
 	
@@ -158,6 +165,7 @@ def CheckTime(type,timespan,x,d,session):
 		ot.datetime=datetime.datetime.today()
 		session.save_or_update(ot)
 	return d
+
 
 #所謂「おはようなのよ」
 def AnalyzeReply(x,session):
