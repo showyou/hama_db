@@ -11,8 +11,8 @@ import cPickle as pickle
 
 g_depthMax = 30 # 最大探索深さ(=単語数)
 exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./config.json"
-
+conf_path = exec_path+"./common/config.json"
+common_path = exec_path+"./common/"
 
 def getAuthData(fileName):
     file = open(fileName,'r')
@@ -64,9 +64,9 @@ def depthFirstSearch2( startWord, endWord, depthMax, reverse=False):
     selectwordList = []
     
     # 探索用DBを開く
-    data_db = pytc.BDB("../common/markov.bdb", 
+    data_db = pytc.BDB(common_path + "/markov.bdb", 
         pytc.BDBOWRITER | pytc.BDBOCREAT)
-    index_db = pytc.BDB("../common/invertIndex.bdb",
+    index_db = pytc.BDB(common_path + "/invertIndex.bdb",
         pytc.BDBOWRITER | pytc.BDBOCREAT)
 
 
