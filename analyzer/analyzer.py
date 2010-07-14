@@ -180,7 +180,7 @@ def insertMarkovData2DB(dbSession, insertData):
         #print "iKG", indexKeyGram, indexKey
         value = gram[2]
         if not (db.has_key(key)):
-            db[key] = struct.pack(key, 0)
+            db[key] = struct.pack('i', 1)
         else:
             db.addint(key,insertData[gram])
         print struct.unpack('i', db[key])[0]

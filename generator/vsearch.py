@@ -9,6 +9,7 @@ from shuffleByCount import shuffleByCount
 import pytc
 import pickle
 import sys
+import struct
 
 g_depthMax = 30 # 最大探索深さ(=単語数)
 exec_path = "/home/yuki/public_git/hama_db/"
@@ -35,9 +36,7 @@ def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
     else:
         depth += 1
         query = pickle.dumps((node["prev"], node["text"]))
-        print query
         f = pickle.loads(index_db[query])
-        print "a"
         #逆にとって、最後にreverseするやり方はダメな気がする
         #f = q.filter(and_(type1==node["text"],type2==node["prev"]))
         tmpList = []
@@ -48,12 +47,12 @@ def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
 
             query = pickle.dumps((node["prev"], node["text"], fq))
             try:
-                count = db.addint(query, 0) + INT_MAX
-                print "count",count
+                count = struct.unpack('i', db[query])[0]
                 tmpList.append({"name":fq,"count":count})
             except:
                 print "Unexpected error:", sys.exc_info()
-                print node["prev"], node["text"], "fq",fq,
+                print node["prev"], node["text"], "fq",fq
+        print "tmpList", tmpList
         shuffleList = shuffleByCount(tmpList)
         for i in shuffleList:
             print "i", i["name"]
