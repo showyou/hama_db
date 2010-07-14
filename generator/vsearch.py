@@ -25,7 +25,6 @@ def getAuthData(fileName):
 
 def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
     node = {"text":startWord,"prev":prevWord, "visit":False}
-    print node
     stack =[] 
     depth = 1 # 探索深さ
     
@@ -52,10 +51,9 @@ def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
             except:
                 print "Unexpected error:", sys.exc_info()
                 print node["prev"], node["text"], "fq",fq
-        print "tmpList", tmpList
         shuffleList = shuffleByCount(tmpList)
         for i in shuffleList:
-            print "i", i["name"]
+            #print "i", i["name"]
             resultList = dfs2(db, index_db, node["text"], i["name"], endWord,
                             depthMax-1 )
             if resultList != []:
@@ -74,10 +72,9 @@ def depthFirstSearch2( startWord, endWord, depthMax, reverse=False):
         pytc.BDBOREADER)
     index_db = pytc.BDB(common_path + "invertIndex.bdb",
         pytc.BDBOREADER)
-    for k, v in index_db.iteritems():
-        if pickle.loads(k)[1] == 'yystart' :print k
+    #for k, v in index_db.iteritems():
+    #    if pickle.loads(k)[1] == 'yystart' :print k
      
-    print "start dfs"
     if reverse:
         pass
         #stack = dfs2(db, "", startWord, endWord, depthMax)

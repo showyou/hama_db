@@ -70,7 +70,7 @@ def quickAnalyze():
 			hot = model.Hot()
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
-        dbSession.update(t)
+        dbSession.save_or_update(t)
         dbSession.commit()
 
 

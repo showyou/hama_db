@@ -28,6 +28,9 @@ common_path = exec_path+"/common/"
 
 dbSession = None
 
+import codecs
+sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
+
 def getAuthData(fileName):
 	file = open(fileName,'r')
 	a = simplejson.loads(file.read())
@@ -175,7 +178,6 @@ def insertMarkovData2DB(dbSession, insertData):
         indexKeyGram = (gram[0], gram[1])
 
         key = pickle.dumps(gram)
-        print key
         indexKey = pickle.dumps(indexKeyGram)
         #print "iKG", indexKeyGram, indexKey
         value = gram[2]
@@ -183,22 +185,24 @@ def insertMarkovData2DB(dbSession, insertData):
             db[key] = struct.pack('i', 1)
         else:
             db.addint(key,insertData[gram])
-        print struct.unpack('i', db[key])[0]
+        #print gram[0], gram[1], gram[2],
+        #print struct.unpack('i', db[key])[0]
         if not (invertIndex.has_key(indexKey)):
-            invertIndex[indexKey] = set(value)
-        else:
-            invertIndex[indexKey].add(value)
-       
+            invertIndex[indexKey] = set()
+
+        #else:
+        invertIndex[indexKey].add(value)
         """
         try:
             #pass
-
             dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
                            % (gram +(count,) ) )
         except:
             print gram
             print "Unexpected error:", sys.exc_info()
+        """
         #
+        """
             q2 = q.filter(and_(model.Markov.now == pw,
             model.Markov.next == cw))
            if q2.count() > 0:
