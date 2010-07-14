@@ -44,8 +44,8 @@ def analyze():
 
     # ToDo:ここ、1000件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
 
+    insertData = defaultdict(int)
     while(True):
-        insertData = defaultdict(int)
         tq = q.filter(model.Twit.isAnalyze == 1)[:1000]
         i = 0
         if len(tq) == 0: break
@@ -74,6 +74,10 @@ def analyze():
                 dbSession.commit()
                 insertData = defaultdict(int)
                 i = 0
+
+    if len(insertData) > 0:
+        insertMarkovData2DB(dbSession, insertData)
+        dbSession.commit()
 
 
 # A,_,B->A_Bに直す
@@ -156,7 +160,8 @@ def appendMarkov(markovWordList, session, insertData):
         
 
 import pytc
-import cPickle as pickle
+import pickle
+import struct
 def insertMarkovData2DB(dbSession, insertData):
     #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
     #ベンチ必要
@@ -170,12 +175,17 @@ def insertMarkovData2DB(dbSession, insertData):
         indexKeyGram = (gram[0], gram[1])
 
         key = pickle.dumps(gram)
+        print key
         indexKey = pickle.dumps(indexKeyGram)
         #print "iKG", indexKeyGram, indexKey
         value = gram[2]
-        db.addint(key,insertData[gram])
+        if not (db.has_key(key)):
+            db[key] = struct.pack(key, 0)
+        else:
+            db.addint(key,insertData[gram])
+        print struct.unpack('i', db[key])[0]
         if not (invertIndex.has_key(indexKey)):
-            invertIndex[indexKey] = set([ value ])
+            invertIndex[indexKey] = set(value)
         else:
             invertIndex[indexKey].add(value)
        
@@ -199,7 +209,7 @@ def insertMarkovData2DB(dbSession, insertData):
             markov.now =  pw
             markov.next = cw
         session.save_or_update(markov)"""
-    #db.close()
+    db.close()
     
 
     # 転置インデックス書き込む
@@ -210,6 +220,7 @@ def insertMarkovData2DB(dbSession, insertData):
             tmpValue.update(value)
         else:
             tmpValue = value
+        
         db[key] = pickle.dumps( tmpValue )
     db.close()
     

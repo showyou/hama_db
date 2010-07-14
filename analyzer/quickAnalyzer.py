@@ -71,7 +71,7 @@ def quickAnalyze():
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
         dbSession.update(t)
-		dbSession.commit()
+        dbSession.commit()
 
 
 # A,_,B->A_Bに直す
