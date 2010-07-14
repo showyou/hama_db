@@ -6,6 +6,8 @@ import model
 import simplejson
 from sqlalchemy import and_
 from shuffleByCount import shuffleByCount
+import pytc
+import cPickle as pickle
 
 g_depthMax = 30 # 最大探索深さ(=単語数)
 exec_path = "/home/yuki/public_git/hama_db/"
@@ -18,10 +20,10 @@ def getAuthData(fileName):
     file.close()
     return a
 
-def dfs2(session, prevWord, startWord, endWord, depthMax, isFirst = False):
+
+def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
     type1 = model.Markov.now	
     type2 = model.Markov.prev
-    q = session.query(model.Markov)
     node = {"text":startWord,"prev":prevWord, "visit":False}
     print node
     stack =[] 
@@ -33,16 +35,18 @@ def dfs2(session, prevWord, startWord, endWord, depthMax, isFirst = False):
         return []
     else:
         depth += 1
-        if isFirst == True:
-            f = q.filter(type2==node["text"])[:1000]
-        else:
-            f = q.filter(and_(type1==node["text"],type2==node["prev"]))
+        query = pickle.dumps((node["prev"], node["text"]))
+        f = pickle.loads(index_db[query])
+        #逆にとって、最後にreverseするやり方はダメな気がする
+        #f = q.filter(and_(type1==node["text"],type2==node["prev"]))
         tmpList = []
         for fq in f:
             #if reverse:
             #    tmpList.append({"name":fq.now,"count":fq.count})
             #else:
-            tmpList.append({"name":fq.next,"count":fq.count})
+            query = pickle.dumps((node["prev"], node["text"], fq))
+            count = db[query]
+            tmpList.append({"name":fq,"count":count})
         shuffleList = shuffleByCount(tmpList)
         for i in shuffleList:
             print "i", i["name"]
@@ -52,16 +56,26 @@ def dfs2(session, prevWord, startWord, endWord, depthMax, isFirst = False):
                 resultList.insert(0, node["text"])
                 return resultList
         else: return []
-              
-def depthFirstSearch2(session, startWord, endWord, depthMax, reverse=False):
+
+
+def depthFirstSearch2( startWord, endWord, depthMax, reverse=False):
     #print ("ans")
     sentence = ""
     selectwordList = []
+    
+    # 探索用DBを開く
+    data_db = pytc.BDB("../common/markov.bdb", 
+        pytc.BDBOWRITER | pytc.BDBOCREAT)
+    index_db = pytc.BDB("../common/invertIndex.bdb",
+        pytc.BDBOWRITER | pytc.BDBOCREAT)
+
 
     if reverse:
-        stack = dfs2(session, u"", startWord, endWord, depthMax)
+        pass
+        #stack = dfs2(db, u"", startWord, endWord, depthMax)
     else:
-        stack = dfs2(session, u"", startWord, endWord, depthMax, True)
+        stack = dfs2(db, index_db, u"", startWord, endWord, depthMax)
+    
     if reverse : 
         stack.reverse()
         stack.pop()

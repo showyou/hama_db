@@ -160,7 +160,7 @@ def insertMarkovData2DB(dbSession, insertData):
     #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
     #ベンチ必要
 
-    db = pytc.BDB('markov.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    db = pytc.BDB('../markov.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
     invertIndex = {}
     #今回はprev, nowに対するnextのテーブルだけど、now,nextに対してprevを得る奴も必要かも
     for gram, count in insertData.iteritems():
@@ -202,8 +202,7 @@ def insertMarkovData2DB(dbSession, insertData):
     
 
     # 転置インデックス書き込む
-    
-    db = pytc.BDB('invertIndex.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    db = pytc.BDB('../invertIndex.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
     for key, value in invertIndex.iteritems():
         if db.has_key(key):
             tmpValue = pickle.loads(db[key])
