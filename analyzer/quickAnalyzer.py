@@ -23,7 +23,7 @@ conf_path = exec_path+"/common/config.json"
 
 dbSession = None
 regOhayou = re.compile(u'おはよう|起床|オハヨウ')
-regTadaima = re.compile(u'ただいま|帰宅')
+regTadaima = re.compile(u'ただいま|帰宅($|した$)')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
 regMoyashi = re.compile(u'もやし')
@@ -58,7 +58,7 @@ def quickAnalyze():
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
 		#print_d2(t.text)
-		AnalyzeReply(t,dbSession)
+		analyzeReply(t,dbSession)
 		t.isAnalyze = 1 
 		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
@@ -168,7 +168,7 @@ def CheckTime(type,timespan,x,d,session):
 
 
 #所謂「おはようなのよ」
-def AnalyzeReply(x,session):
+def analyzeReply(x,session):
 
     d = model.RetQueue()
     d.user = ""
