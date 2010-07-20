@@ -23,7 +23,7 @@ conf_path = exec_path+"/common/config.json"
 
 dbSession = None
 regOhayou = re.compile(u'おはよう|起床|オハヨウ')
-regTadaima = re.compile(u'ただいま|帰宅($|した$)')
+regTadaima = re.compile(u'ただいま|帰宅($|。|し(まし)*た($|。))')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
 regMoyashi = re.compile(u'もやし')
