@@ -15,15 +15,15 @@ def readFile(filename):
     data = f.read()
     f.close()
     lines = data.split('\n')
-    print '<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="1" errors="0" failures="1" skip="0"><testcase classname="analyzer.testQuickAnalyzer" name="analyzer.testQuickAnalyzer.testRegKitaku" time="0">'
+    print '<?xml version="1.0" encoding="UTF-8"?><testsuite name="nosetests" tests="1" errors="0" failures="1" skip="0"><testcase classname="analyzer.testQuickAnalyzer" name="pep8" time="0">'
     for line in lines:
         #print line
         a = convert(line)
         #print a
         if len(a) > 2:
-            print "<failure type=\"exceptions.AssertionError\">",\
-                    a[3]," ".join(a[4:]),"</failure>"
-    print '</testcase></testsuite>'
+            print "<testcase><failure type=\"exceptions.AssertionError\">",\
+                    a[3]," ".join(a[4:]),"</failure></testcase>"
+    print '</testsuite>'
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
