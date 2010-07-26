@@ -14,7 +14,6 @@ def testRegKitaku():
     t.eq_(isKitaku(u"帰宅中"), True)
 
 
-def testReqKitaku2():
     t.eq_(isKitaku(u"帰宅したら"), True)
     t.eq_(isKitaku(u"帰宅しても"), False)
 
