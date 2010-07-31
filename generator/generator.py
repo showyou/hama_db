@@ -40,7 +40,7 @@ def generator():
 			#	str,sl = CreateMarkovSentenceWithHot(dbSession)
 			#except:
 			#	print "Unexpected error:", sys.exc_info()[0]
-			str,sl = vsearch.depthFirstSearch2(dbSession,u"yystart",u"yyend",15)
+			str,sl = vsearch.depthFirstSearch2("yystart","yyend",15)
 			print_d(str)
 			print_d(len(sl))
 			asl = afterEffect(sl)

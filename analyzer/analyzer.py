@@ -24,8 +24,12 @@ g_outencode = g_systemencode
 _debug = False 
 exec_path = "/home/yuki/public_git/hama_db"
 conf_path = exec_path+"/common/config.json"
+common_path = exec_path+"/common/"
 
 dbSession = None
+
+import codecs
+sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
 
 def getAuthData(fileName):
 	file = open(fileName,'r')
@@ -43,8 +47,8 @@ def analyze():
 
     # ToDo:ここ、1000件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
 
+    insertData = defaultdict(int)
     while(True):
-        insertData = defaultdict(int)
         tq = q.filter(model.Twit.isAnalyze == 1)[:1000]
         i = 0
         if len(tq) == 0: break
@@ -73,6 +77,10 @@ def analyze():
                 dbSession.commit()
                 insertData = defaultdict(int)
                 i = 0
+
+    if len(insertData) > 0:
+        insertMarkovData2DB(dbSession, insertData)
+        dbSession.commit()
 
 
 # A,_,B->A_Bに直す
@@ -143,32 +151,54 @@ def appendMarkov(markovWordList, session, insertData):
     #DBに直接入れるんじゃなくて、一旦メモリにでも保管
     # pw = previous word cw = current word nw = next word
     pw = ""
-    nw = "yystart"
+    cw = "yystart"
     markovWordList.append("yyend")
     q = session.query(model.Markov)
-    for cw in markovWordList:
-        cw = unicode(cw,g_systemencode)
+    for nw in markovWordList:
+        nw = unicode(nw,g_systemencode)
         insertData[(pw, cw, nw)]+=1
         # もしnow = pw, next=cwがあったらそれに1足す
-        pw = nw
-        nw = cw
+        pw = cw
+        cw = nw
         
 
 import pytc
-import cPickle as pickle
+import pickle
+import struct
 def insertMarkovData2DB(dbSession, insertData):
     #matope風に一旦ファイル書き出し 一括書き込みの方が早いかも
     #ベンチ必要
-    db = pytc.BDB('bdb.db', pytc.BDBOWRITER | pytc.BDBOCREAT)
-    for grams in insertData.keys():
-        key = pickle.dumps(grams)
-        db.addint(key, insertData[grams])
+
+    db = pytc.BDB(common_path + 'markov.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    invertIndex = {}
+    #今回はprev, nowに対するnextのテーブルだけど、now,nextに対してprevを得る奴も必要かも
+    for gram, count in insertData.iteritems():
+        #print gram, count
+        
+        indexKeyGram = (gram[0], gram[1])
+
+        key = pickle.dumps(gram)
+        indexKey = pickle.dumps(indexKeyGram)
+        #print "iKG", indexKeyGram, indexKey
+        value = gram[2]
+        if not (db.has_key(key)):
+            db[key] = struct.pack('i', 1)
+        else:
+            db.addint(key,insertData[gram])
+        #print gram[0], gram[1], gram[2],
+        #print struct.unpack('i', db[key])[0]
+        if not (invertIndex.has_key(indexKey)):
+            invertIndex[indexKey] = set()
+
+        #else:
+        invertIndex[indexKey].add(value)
         """
         try:
+            #pass
             dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
-                           % (grams +(insertData[grams],) ) )
+                           % (gram +(count,) ) )
         except:
-            print grams
+            print gram
             print "Unexpected error:", sys.exc_info()
 
         q2 = q.filter(and_(model.Markov.now == pw,
@@ -181,7 +211,21 @@ def insertMarkovData2DB(dbSession, insertData):
             markov.now =  pw
             markov.next = cw
         session.save_or_update(markov)"""
+    db.close()
+    
 
+    # 転置インデックス書き込む
+    db = pytc.BDB(common_path + 'invertIndex.bdb', pytc.BDBOWRITER | pytc.BDBOCREAT)
+    for key, value in invertIndex.iteritems():
+        if db.has_key(key):
+            tmpValue = pickle.loads(db[key])
+            tmpValue.update(value)
+        else:
+            tmpValue = value
+        
+        db[key] = pickle.dumps( tmpValue )
+    db.close()
+    
 
 # 共起テーブルに追加
 # l : わかち書きした単語のリスト

@@ -1,0 +1,14 @@
+{
+ "comment":"/* 識別子 複数対応, 先頭のみ対応, 判定文字 返信文字群 */",
+ "ohayou": [ true, false, "おはよう|起床|オハヨウ"],
+ "tadaima":[ false, false, "ただいま|帰宅($|。|し(まし)*た($|。))"],
+ "otukare":[ false,  false, "(疲|つか)れた|タスケテ|助けて"],
+ "chucchu":[ false, false, "甘えたい|ちゅっ"],
+ "moyashi":[ false, false, "もやし"],
+ "wanwan":[ false, false, "もやし"],
+ "mukyu":[ false, false, "(@yuka_|@ゆうか|@ゆーか)(.*)"],
+ "mayuri":[ false, false, "トゥットゥルー"],
+ "baribari":[ false, false, "ﾊﾞﾘﾊﾞﾘ|ばりばり|バリバリ|マジックテープ"],
+ "at" :[ false, true, "(@yuka_|@ゆうか|@ゆーか)(.*)"]
+}
+

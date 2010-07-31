@@ -23,7 +23,7 @@ conf_path = exec_path+"/common/config.json"
 
 dbSession = None
 regOhayou = re.compile(u'おはよう|起床|オハヨウ')
-regTadaima = re.compile(u'ただいま|帰宅')
+regTadaima = re.compile(u'ただいま|帰宅($|。|し(まし)*た($|。))')
 regTukareta = re.compile(u'(疲|つか)れた|タスケテ|助けて')
 regChucchu = re.compile(u'甘えたい|ちゅっ')
 regMoyashi = re.compile(u'もやし')
@@ -45,6 +45,7 @@ def LoadUserData(fileName):
         sys.exit(1)
     return a
 
+
 def quickAnalyze():
 	# dbからデータを読み込む
 	u = LoadUserData(conf_path)
@@ -52,12 +53,12 @@ def quickAnalyze():
 	# 前回の更新時間から現在までのデータを入手する
 
 	q = dbSession.query(model.Twit)
-	tq = q.filter(model.Twit.isAnalyze == 0)
+	tq = q.filter(model.Twit.isAnalyze == 0)[:10000]
 	for t in tq:
 		#1発言毎
 		t.text = RemoveCharacter(t.text)
 		#print_d2(t.text)
-		AnalyzeReply(t,dbSession)
+		analyzeReply(t,dbSession)
 		t.isAnalyze = 1 
 		t_enc = t.text.encode(g_mecabencode,'ignore')
 		sarray = mecab.sparse_all(t_enc,mecabPath).split("\n")
@@ -69,7 +70,9 @@ def quickAnalyze():
 			hot = model.Hot()
 			hot.word = unicode(tn,g_systemencode)
 			dbSession.save(hot)
-		dbSession.commit()
+        dbSession.save_or_update(t)
+        dbSession.commit()
+
 
 # A,_,B->A_Bに直す
 def connectUnderScore(array):
@@ -86,6 +89,7 @@ def connectUnderScore(array):
 	if(i < len(array)):retArray.append(array[i])
 	if(i+1 < len(array)):retArray.append(array[i+1])
 	return retArray		
+
 
 # 分解した品詞列から単語群と重要単語を抜き出す
 def TakeWordList(sarray):	
@@ -104,6 +108,7 @@ def TakeWordList(sarray):
                 if sa2[0] != "yystart" and sa2[0] != "yyend":
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
+
 
 # test内容
 # RemoveCharacter("検索サイト http://www.google.com")->検索サイト
@@ -130,9 +135,11 @@ def RemoveCharacter(str):
 
 	return str
 
+
 def print_d2(str):
 	if _debug:
 		print unicode(str,g_systemencode,'ignore').encode(g_outencode,'ignore'),
+
 
 def CheckTime(type,timespan,x,d,session):
 	
@@ -159,8 +166,9 @@ def CheckTime(type,timespan,x,d,session):
 		session.save_or_update(ot)
 	return d
 
+
 #所謂「おはようなのよ」
-def AnalyzeReply(x,session):
+def analyzeReply(x,session):
 
     d = model.RetQueue()
     d.user = ""
