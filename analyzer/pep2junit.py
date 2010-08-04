@@ -21,7 +21,7 @@ def readFile(filename):
         a = convert(line)
         #print a
         if len(a) > 2:
-            print "<testcase classname=\"analyzer.testQuickAnalyzer\" name=\"pep8\" time=\"0\"><failure type=\"exceptions.AssertionError\">",\
+            print "<testcase classname=\""+a[0]+"\" name=\"pep8\" time=\"0\"><failure type=\"exceptions.AssertionError\">",\
                 a[3]," ".join(a[4:]),"</failure></testcase>"
     print '</testsuite>'
 

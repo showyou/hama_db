@@ -11,6 +11,9 @@ import pickle
 import sys
 import struct
 
+# import codecs
+# sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
+
 g_depthMax = 30 # 最大探索深さ(=単語数)
 exec_path = "/home/yuki/public_git/hama_db/"
 conf_path = exec_path+"./common/config.json"
@@ -49,8 +52,8 @@ def dfs2(db, index_db, prevWord, startWord, endWord, depthMax):
                 count = struct.unpack('i', db[query])[0]
                 tmpList.append({"name":fq,"count":count})
             except:
-                print "Unexpected error:", sys.exc_info()
-                print node["prev"], node["text"], "fq",fq
+                print "Unexpected error:" 
+                #print node["prev"], node["text"], "fq",fq
         shuffleList = shuffleByCount(tmpList)
         for i in shuffleList:
             #print "i", i["name"]

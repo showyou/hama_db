@@ -6,7 +6,7 @@ def do(reply,session):
     sentence = ""
     for r in reply:
         if r.text == "ohayou" :
-            sentence = ".@"+r.user
+            sentence = "@"+r.user
             l2num = 1
             while l2num < reply.count():
                 l2 = reply[l2num]
