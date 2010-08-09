@@ -18,7 +18,8 @@ def do(reply,session):
                 if len(sentence) > 100: break
             sentence += " "+random.choice((u'おはようございますー',u'おはおはー',u'おっはー',u'おはよー'))
         elif r.text == 'tadaima':
-            sentence = "@"+r.user+" "+random.choice((u" おかえり～",u" おかえりなさい"))
+            sentence = "@"+r.user+" "+random.choice((u" おかえり～",\
+            u"おかえりなさい", u"おか"))
         elif r.text == 'otukare':
             s = random.choice((u'おつかれさまです',u'あともうちょっとです',u'私が見守ってます！',u'大丈夫?',u'大丈夫,きっとなんとかなります！',u'なでなで〜'))
             sentence = "@"+r.user+" "+s
@@ -27,7 +28,8 @@ def do(reply,session):
             sentence = "@"+r.user+" "+s
         elif r.text == 'at':
             s = \
-            random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'なあにー？', u'ずこー'))
+            random.choice((u'あほか',u'ないわー',u'うんうん',u'ちゅっちゅー<3',u'なあにー？',\
+            u'ずこー', u'ええええ＞＜', u'えっ'))
             sentence = "@"+r.user+" "+s
         elif r.text == 'moyashi':
             s = u'だれがもやしですか'
