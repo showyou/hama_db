@@ -29,6 +29,7 @@ class AlchemyUsers(BaseUsers):
     def count(self):
         return self.data.count()
 
+
 # 配列管理のユーザ
 class ArrayUsers(BaseUsers):
     def __init__(self, data):
