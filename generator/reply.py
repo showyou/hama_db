@@ -32,15 +32,22 @@ class AlchemyUsers(BaseUsers):
 
 # 配列管理のユーザ
 class ArrayUsers(BaseUsers):
-    def __init__(self, data):
-        self.data = data
+    class TmpUser():
+        def __init__(self, user, text):
+            self.user = user
+            self.text = text
+        
+    def __init__(self, tmpdata):
+        self.data = []
+        for td in tmpdata:
+            self.data.append( ArrayUsers.TmpUser(td["user"], td["text"]) )
     
     # 値を持つ要素を削除じゃないの？
     def delete(self, item):
         self.data.remove(item)
 
     # a[hoge]なやつ
-    def __getitem__(i):
+    def __getitem__(self, i):
         return self.data[i]
 
     def count():
@@ -63,8 +70,8 @@ def pickup_same_reply(type, data):
 
 # 下の奴を整理する
 def do_reply(table, replies):
-    sentence = "@" + replies[0]["user"]
-    type = replies[0]["text"]
+    sentence = "@" + replies[0].user
+    type = replies[0].text
     if table[type][1]:
         sentence = pickup_same_reply(type, other_replies)
     sentence += random.choice(table[type][4])   
