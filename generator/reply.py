@@ -34,9 +34,10 @@ class AlchemyUsers(BaseUsers):
 class ArrayUsers(BaseUsers):
     def __init__(self, data):
         self.data = data
-
+    
+    # 値を持つ要素を削除じゃないの？
     def delete(self, item):
-        del self.data[item]
+        self.data.remove(item)
 
     # a[hoge]なやつ
     def __getitem__(i):
@@ -61,13 +62,21 @@ def pickup_same_reply(type, data):
 
 
 # 下の奴を整理する
-def do_reply(text, table, other_replies):
-    sentence = ""
-    id = text
-    if table[text]['is_multi_reply']:
-        sentence = pickup_same_reply(text, other_replies)
-    sentence += random.choice(table[text]['reply_pattern'])   
+def do_reply(table, replies):
+    sentence = "@" + replies[0]["user"]
+    type = replies[0]["text"]
+    if table[type][1]:
+        sentence = pickup_same_reply(type, other_replies)
+    sentence += random.choice(table[type][4])   
     return sentence
+
+
+# do からdo_replyへの移行
+# reply->data session->sessionでAlchemyArray作る
+# tableはどうする？予め読み込む
+def do2(table, reply, session):
+    replies = AlchemyUsers(reply, session)
+    return do_reply(table, replies)
 
 
 # 返事考える
