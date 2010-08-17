@@ -20,7 +20,8 @@ class AlchemyUsers(BaseUsers):
         self.data = data
 
     def delete(self, item):
-        self.session.delete(item)
+        #self.session.delete(item)
+        print item
 
     # a[hoge]なやつ
     def __getitem__(self,i):
@@ -50,31 +51,33 @@ class ArrayUsers(BaseUsers):
     def __getitem__(self, i):
         return self.data[i]
 
-    def count():
-        return len(count)
+    def count(self):
+        return len(self.data)
 
 
 # data = ArrayUsers or AlchemyUsers
 def pickup_same_reply(type, data):
     sentence = ""
     l2num = 1
+    print "count:", data.count()
     while l2num < data.count():
         l2 = data[l2num]
         if l2.text == type:
-            sentence += " @"+l2.user
+            sentence += "@"+l2.user + " "
             data.delete(l2)
         else:
             l2num += 1
         if len(sentence) > 100: break
-
+    return sentence
 
 # 下の奴を整理する
 def do_reply(table, replies):
-    sentence = "@" + replies[0].user
+    sentence = "@" + replies[0].user + " "
     type = replies[0].text
-    if table[type][1]:
-        sentence = pickup_same_reply(type, other_replies)
-    sentence += random.choice(table[type][4])   
+    if table[type][0]:
+        sentence += pickup_same_reply(type, replies)
+    sentence += random.choice(table[type][4])
+    replies.delete(replies[0])
     return sentence
 
 

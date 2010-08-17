@@ -23,7 +23,8 @@ class TestArrayUsers():
 
     @nt.with_setup(setUp, tearDown)
     def test_delete(self):
-        self.users.delete(1)
+        user = self.users[0]
+        self.users.delete(user)
         nt.eq_(self.users.data, [2,3,4,5])
 
     @nt.with_setup(setUp, tearDown)
@@ -46,8 +47,8 @@ class TestAlchemyUsers():
         table = readReplyTableFile.read("../common/replyTable.json")
         session = model.startSession(u)
         rep = session.query(model.RetQueue)
-        reply.do2(table, rep, session)
-
+        print reply.do2(table, rep, session)
+        
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -63,4 +64,5 @@ def LoadUserData(fileName):
 
 
 if __name__ == "__main__":
+    TestAlchemyUsers().test_query()
     nose.main()
