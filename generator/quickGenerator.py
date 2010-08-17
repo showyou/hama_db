@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0,exec_path)
 
 from common import auth_api
+from common import readReplyTableFile
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
 import model
@@ -23,6 +24,7 @@ def quickGenerate():
     #sched = scheduler.Scheduler()
     #sched.schedule()
     u = LoadUserData(conf_path)
+    table, footer= readReplyTableFile.read(exec_path+"/common/replyTable.json")
     dbSession = model.startSession(u)
     if False:
         if( sched.has_schedule() ):
@@ -30,7 +32,7 @@ def quickGenerate():
     else:
         rep = dbSession.query(model.RetQueue)
         if( rep.count() > 0 ):
-            str = reply.do(rep,dbSession)
+            str = reply.do(table, rep,dbSession)
             sendMessage(str)
 
 def LoadUserData(fileName):

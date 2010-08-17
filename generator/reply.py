@@ -20,8 +20,8 @@ class AlchemyUsers(BaseUsers):
         self.data = data
 
     def delete(self, item):
-        #self.session.delete(item)
-        print item
+        self.session.delete(item)
+        #print item
 
     # a[hoge]なやつ
     def __getitem__(self,i):
@@ -70,26 +70,32 @@ def pickup_same_reply(type, data):
         if len(sentence) > 100: break
     return sentence
 
+
 # 下の奴を整理する
 def do_reply(table, replies):
-    sentence = "@" + replies[0].user + " "
-    type = replies[0].text
+    r = replies[0]
+    sentence = "@" + r.user + " "
+    type = r.text
+    print table[type]
     if table[type][0]:
         sentence += pickup_same_reply(type, replies)
     sentence += random.choice(table[type][4])
-    replies.delete(replies[0])
+    replies.delete(r)
     return sentence
 
 
 # do からdo_replyへの移行
 # reply->data session->sessionでAlchemyArray作る
 # tableはどうする？予め読み込む
-def do2(table, reply, session):
+def do(table, reply, session):
     replies = AlchemyUsers(reply, session)
-    return do_reply(table, replies)
+    sentence = do_reply(table, replies)
+    session.commit()
+    return sentence
 
 
 # 返事考える
+"""
 def do(reply,session):
     sentence = ""
     for r in reply:
@@ -148,3 +154,4 @@ def do(reply,session):
             break
     session.commit()
     return sentence 
+"""
