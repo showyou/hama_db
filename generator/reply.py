@@ -71,12 +71,10 @@ def pickup_same_reply(type, data):
     return sentence
 
 
-# 下の奴を整理する
 def do_reply(table, replies):
     r = replies[0]
     sentence = "@" + r.user + " "
     type = r.text
-    print table[type]
     if table[type][0]:
         sentence += pickup_same_reply(type, replies)
     sentence += random.choice(table[type][4])
