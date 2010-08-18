@@ -20,7 +20,8 @@ class AlchemyUsers(BaseUsers):
         self.data = data
 
     def delete(self, item):
-        self.session.delete(item)
+        #self.session.delete(item)
+        print item
 
     # a[hoge]なやつ
     def __getitem__(self,i):
@@ -29,44 +30,63 @@ class AlchemyUsers(BaseUsers):
     def count(self):
         return self.data.count()
 
+
 # 配列管理のユーザ
 class ArrayUsers(BaseUsers):
-    def __init__(self, data):
-        self.data = data
-
+    class TmpUser():
+        def __init__(self, user, text):
+            self.user = user
+            self.text = text
+        
+    def __init__(self, tmpdata):
+        self.data = []
+        for td in tmpdata:
+            self.data.append( ArrayUsers.TmpUser(td["user"], td["text"]) )
+    
+    # 値を持つ要素を削除じゃないの？
     def delete(self, item):
-        del self.data[item]
+        self.data.remove(item)
 
     # a[hoge]なやつ
-    def __getitem__(i):
+    def __getitem__(self, i):
         return self.data[i]
 
-    def count():
-        return len(count)
+    def count(self):
+        return len(self.data)
 
 
 # data = ArrayUsers or AlchemyUsers
 def pickup_same_reply(type, data):
     sentence = ""
     l2num = 1
+    print "count:", data.count()
     while l2num < data.count():
         l2 = data[l2num]
         if l2.text == type:
-            sentence += " @"+l2.user
+            sentence += "@"+l2.user + " "
             data.delete(l2)
         else:
             l2num += 1
         if len(sentence) > 100: break
-
+    return sentence
 
 # 下の奴を整理する
-def do_reply(text, table, other_replies):
-    sentence = ""
-    id = text
-    if table[text]['is_multi_reply']:
-        sentence = pickup_same_reply(text, other_replies)
-    sentence += random.choice(table[text]['reply_pattern'])   
+def do_reply(table, replies):
+    sentence = "@" + replies[0].user + " "
+    type = replies[0].text
+    if table[type][0]:
+        sentence += pickup_same_reply(type, replies)
+    sentence += random.choice(table[type][4])
+    replies.delete(replies[0])
     return sentence
+
+
+# do からdo_replyへの移行
+# reply->data session->sessionでAlchemyArray作る
+# tableはどうする？予め読み込む
+def do2(table, reply, session):
+    replies = AlchemyUsers(reply, session)
+    return do_reply(table, replies)
 
 
 # 返事考える
