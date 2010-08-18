@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./common/config.json"
+import os
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
+conf_path = exec_path+"/common/config.json"
 
 import sys
 sys.path.insert(0,exec_path)
@@ -27,7 +27,7 @@ def generator():
     #sched = scheduler.Scheduler()
     #sched.schedule()
     u = LoadUserData(conf_path)
-    table, footer= readReplyTable.read(exec_path+"./common/replyTable.json")
+    table, footer= readReplyTable.read(exec_path+"/common/replyTable.json")
     dbSession = model.startSession(u)
     if False:
     #if( sched.has_schedule() ):

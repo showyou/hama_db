@@ -5,6 +5,7 @@
 # 1.マルコフ連鎖テーブル
 # 2.最近10min間のホットな単語リスト
 # 3.ればreplyリストに入れる
+import os
 import sys
 import mecab
 import datetime
@@ -22,7 +23,7 @@ mecabPath = "/usr/lib/libmecab.so.1"
 g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-exec_path = "/home/yuki/public_git/hama_db"
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
 conf_path = exec_path+"/common/config.json"
 common_path = exec_path+"/common/"
 

@@ -4,6 +4,7 @@
 # analyzerのうちの単純応答だけ高速に出す
 # 1min程度cronで
 # 最初過去時間は1min固定->lastUpdateに
+import os
 import mecab
 import model
 import datetime
@@ -17,8 +18,8 @@ mecabPath = "/usr/lib/libmecab.so.1"
 g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-homepath = "/home/yuki/public_git/hama_db"
-exec_path = "/home/yuki/public_git/hama_db"
+homepath = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
+exec_path = homepath
 conf_path = exec_path+"/common/config.json"
 
 import sys
