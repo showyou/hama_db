@@ -88,6 +88,7 @@ def wstrcat(a,b):
     else:    result = b
     return result
 
+
 def CreateMarkovSentenceWithHot(session):
     w = SelectHotWord(session)
     fw,sl1 = vsearch.depthFirstSearch(session,w,u"yyend",8)
@@ -101,6 +102,7 @@ def CreateMarkovSentenceWithHot(session):
     str =bw+fw
     sl = sl2+sl1
     return str,sl
+
 
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
@@ -127,6 +129,7 @@ def sendMessage(str):
     else:
         tw.update_status(str)
 
+
 def SortWordCnt(wordcnt):
     words = wordcnt.keys()
     words.sort(key=lambda x: wordcnt[x], reverse=True)
@@ -148,6 +151,7 @@ def TopN(session, wordcnt,n):
     session.commit()
     return lst
 
+
 # 最近人気の単語から一つ抜き出す
 def SelectHotWord(session):
     q = session.query(model.Hot)
@@ -166,6 +170,7 @@ def SelectHotWord(session):
     w = random.choice(hotNArray)
     print_d("hot"+w)    
     return w 
+
 
 # 数量に応じて結果を返す
 # ex: [a:5, b:3, c:2] なら aが5割、bが3割、cが2割の確率

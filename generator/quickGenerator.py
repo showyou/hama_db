@@ -35,6 +35,7 @@ def quickGenerate():
             str = reply.do(table, rep,dbSession)
             sendMessage(str)
 
+
 def LoadUserData(fileName):
     #ファイルを開いて、データを読み込んで変換する
     #データ形式は(user,password)
@@ -57,6 +58,7 @@ def sendMessage(str):
     str = string.replace(str,'yyend','')
     
     tw.update_status(str)
+
 
 if __name__ == "__main__":
 	quickGenerate()

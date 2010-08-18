@@ -63,11 +63,6 @@ def analyze():
             print len(markovWordList)
             
             #最近出た名詞貯める
-            """for tn in topNWordList:
-                hot = model.Hot()
-                hot.word = unicode(tn,g_systemencode)
-                dbSession.save(hot)
-            """
             dbSession.update(t)
             appendMarkov(markovWordList, dbSession, insertData)
             #appendCollocation(markovWordList,dbSession)
@@ -192,27 +187,6 @@ def insertMarkovData2DB(dbSession, insertData):
 
         #else:
         invertIndex[indexKey].add(value)
-        """
-        try:
-            #pass
-            dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
-                           % (gram +(count,) ) )
-        except:
-            print gram
-            print "Unexpected error:", sys.exc_info()
-        """
-        #
-        """
-            q2 = q.filter(and_(model.Markov.now == pw,
-            model.Markov.next == cw))
-           if q2.count() > 0:
-            markov = q2.one()
-            markov.count += 1
-        else:
-            markov = model.Markov()
-            markov.now =  pw
-            markov.next = cw
-        session.save_or_update(markov)"""
     db.close()
     
 
