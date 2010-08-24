@@ -1,15 +1,17 @@
 import sys
 import simplejson
 
-def read():
-    f = open(sys.argv[1])    
+def read(filename):
+    f = open(filename)    
     data = f.read()
     f.close()
     
     jsondata = simplejson.loads(data)
     del jsondata["comment"]
-   
-    return jsondata
+    footer = jsondata["footer"]
+    del jsondata["footer"] 
+
+    return jsondata, footer
 
 
 def main():

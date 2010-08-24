@@ -6,9 +6,9 @@ import reply
 import readReplyTableFile
 import model
 import simplejson
-
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./common/config.json"
+import os
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
+conf_path = exec_path+"/common/config.json"
 
 class TestArrayUsers():
     def setUp(self):

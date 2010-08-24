@@ -10,14 +10,14 @@ import pytc
 import pickle
 import sys
 import struct
-
+import os
 # import codecs
 # sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
 
 g_depthMax = 30 # 最大探索深さ(=単語数)
-exec_path = "/home/yuki/public_git/hama_db/"
-conf_path = exec_path+"./common/config.json"
-common_path = exec_path+"./common/"
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
+conf_path = exec_path+"/common/config.json"
+common_path = exec_path+"/common/"
 
 def getAuthData(fileName):
     file = open(fileName,'r')
