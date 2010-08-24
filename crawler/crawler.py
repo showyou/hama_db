@@ -42,28 +42,36 @@ def main():
     userdata = getAuthData(conf_path)
     tw = auth_api.connect(userdata["consumer_token"],
         userdata["consumer_secret"], exec_path+"/common/")
-    
-    l = tw.home_timeline()
+
     dbSession = model.startSession(userdata)
 
-    for s in l:
-        #if s.author.screen_name == userdata["user"]:continue
-        jTime = s.created_at + datetime.timedelta(hours = 9)
-        name = unicode(s.user.screen_name)
-        query = dbSession.query(model.Status).filter(
-            and_(model.Status.datetime== jTime, 
-                    model.Status.user==name ))
-        if( query.count() > 0 ): continue
-        if( isNGUser(name) ): continue
-        t = model.Status()
-        t.user = name
-        t.text = s.text
-        t.datetime = jTime
-        t.replyID = s.in_reply_to_status_id
-        t.tweetID = s.id
-        #print s.id
-        dbSession.add(t)
-        dbSession.commit()
+    page_number = 0
+    update_flag = True
+    while update_flag:
+        update_flag = False
+        l = tw.home_timeline(page = page_number)
+        page_number += 1
+        if page_number > 10: break
+        for s in l:
+            #if s.author.screen_name == userdata["user"]:continue
+            jTime = s.created_at + datetime.timedelta(hours = 9)
+            name = unicode(s.user.screen_name)
+            query = dbSession.query(model.Status).filter(
+                and_(model.Status.datetime== jTime, 
+                        model.Status.user==name ))
+            if( query.count() > 0 ): continue
+            if( isNGUser(name) ): continue
+            update_flag = True
+
+            t = model.Status()
+            t.user = name
+            t.text = s.text
+            t.datetime = jTime
+            t.replyID = s.in_reply_to_status_id
+            t.tweetID = s.id
+            #print s.id
+            dbSession.add(t)
+            dbSession.commit()
 
 if __name__ == "__main__":
     main()
