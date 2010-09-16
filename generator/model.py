@@ -26,6 +26,7 @@ class Hot(object):
 class Collocation(object):
 	pass
 
+
 init = False
 metadata = sqlalchemy.MetaData()
 
@@ -87,6 +88,18 @@ collocation = Table("collocation",metadata,
 				mysql_engine = 'InnoDB',
 				mysql_charset = 'utf8'
 			)
+
+reply = Table("reply",metadata,
+                Column('id', types.Integer, primary_key=True),
+                Column('tweet_id', types.BigInteger(20)),
+                Column('reply_text', types.Text),
+                Column('src_id', types.BigInteger(20)),
+                Column('src_text', types.Text),
+                Column('is_analyze', types.SmallInteger, default=False),
+                mysql_engine = 'InnoDB',
+                mysql_charset = 'utf8'
+            )
+
 
 def startSession(conf):
 	global init

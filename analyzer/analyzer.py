@@ -5,13 +5,12 @@
 # 1.マルコフ連鎖テーブル
 # 2.最近10min間のホットな単語リスト
 # 3.ればreplyリストに入れる
+import os
 import sys
-import mecab
 import datetime
 import re
 from sqlalchemy import and_
 
-import model
 import simplejson
 
 from collections import defaultdict
@@ -22,10 +21,11 @@ mecabPath = "/usr/lib/libmecab.so.1"
 g_mecabencode = g_systemencode = "utf-8"
 g_outencode = g_systemencode
 _debug = False 
-exec_path = "/home/yuki/public_git/hama_db"
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
 conf_path = exec_path+"/common/config.json"
 common_path = exec_path+"/common/"
 
+from common import model, mecab
 dbSession = None
 
 import codecs
@@ -63,11 +63,6 @@ def analyze():
             print len(markovWordList)
             
             #最近出た名詞貯める
-            """for tn in topNWordList:
-                hot = model.Hot()
-                hot.word = unicode(tn,g_systemencode)
-                dbSession.save(hot)
-            """
             dbSession.update(t)
             appendMarkov(markovWordList, dbSession, insertData)
             #appendCollocation(markovWordList,dbSession)
@@ -192,25 +187,6 @@ def insertMarkovData2DB(dbSession, insertData):
 
         #else:
         invertIndex[indexKey].add(value)
-        """
-        try:
-            #pass
-            dbSession.execute(u'call replace_markov("%s","%s","%s","%s")'\
-                           % (gram +(count,) ) )
-        except:
-            print gram
-            print "Unexpected error:", sys.exc_info()
-
-        q2 = q.filter(and_(model.Markov.now == pw,
-            model.Markov.next == cw))
-           if q2.count() > 0:
-            markov = q2.one()
-            markov.count += 1
-        else:
-            markov = model.Markov()
-            markov.now =  pw
-            markov.next = cw
-        session.save_or_update(markov)"""
     db.close()
     
 
