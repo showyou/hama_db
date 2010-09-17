@@ -14,7 +14,7 @@ class OhayouTime(object):
 class Markov(object):
 	pass
 
-class Twit(object):
+class Tweet(object):
 	pass
 
 class RetQueue(object):
@@ -68,7 +68,7 @@ hot = Table("hot",metadata,
 				mysql_charset = 'utf8'
 			)
 
-twit = Table("tweet",metadata,
+tweet = Table("tweet",metadata,
 				Column('id', types.Integer, primary_key=True),
 				Column('user', types.Unicode(32)),
 				Column('text', types.Unicode(140)),
@@ -116,7 +116,7 @@ def startSession(conf):
 				)
 
 	if init == False:
-		mapper(Twit, twit)
+		mapper(Tweet, tweet)
 		mapper(Hot,  hot)
 		mapper(Markov,markovOneColumn)
 		mapper(RetQueue, retQueue)

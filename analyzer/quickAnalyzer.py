@@ -6,7 +6,6 @@
 # 最初過去時間は1min固定->lastUpdateに
 import os
 import mecab
-import model
 import datetime
 import re
 import sys
@@ -25,7 +24,7 @@ conf_path = exec_path+"/common/config.json"
 import sys
 sys.path.insert(0,exec_path)
 
-from common import readReplyTable
+from common import readReplyTable, model
 
 dbSession = None
 
@@ -49,8 +48,8 @@ def quickAnalyze():
     regexes = makeRegexes(table)
     
     # 前回の更新時間から現在までのデータを入手する
-    q = dbSession.query(model.Twit)
-    tq = q.filter(model.Twit.isAnalyze == 0)[:10000]
+    q = dbSession.query(model.Tweet)
+    tq = q.filter(model.Tweet.isAnalyze == 0)[:10000]
     for t in tq:
         #1発言毎
         t.text = RemoveCharacter(t.text)
@@ -66,7 +65,7 @@ def quickAnalyze():
         for tn in topNWordList:
             hot = model.Hot()
             hot.word = unicode(tn,g_systemencode)
-            dbSession.save(hot)
+            dbSession.add(hot)
         dbSession.add(t)
         dbSession.commit()
 
@@ -177,11 +176,16 @@ def analyzeReply2(x, session, table, regexes):
     for key, regOne in regexes.iteritems():
         if regOne.search(x.text):
             print_d2(key+" hit")
-            if table[key][2] > 0:
-                CheckTime(key,datetime.timedelta(minutes=table[key][2]),x,d,session)
-            else:
+            if key == "at":
                 d.user = x.user
-                d.text = key
+                text = re.sub("@\S* ","",x.text)
+                d.text = u"at"+text
+            else:
+                if table[key][2] > 0:
+                    CheckTime(key,datetime.timedelta(minutes=table[key][2]),x,d,session)
+                else:
+                    d.user = x.user
+                    d.text = key
             break
     if( d.user != "" ):
         session.add(d)

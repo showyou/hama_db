@@ -48,7 +48,7 @@ def startSession(conf):
 	dbSession = scoped_session(
 					sessionmaker(
 						autoflush = True,
-						transactional = True,
+						autocommit = False,
 						bind = engine
 					)
 				)

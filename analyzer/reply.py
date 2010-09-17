@@ -8,7 +8,7 @@ import replyModel
 def analyze():
 	regAt = re.compile("@(.*?) (.*)")
 	session = replyModel.startSession()
-	q = session.query(model.Twit)
+	q = session.query(model.Tweet)
 	for i in q :
 		r = regAt.search(q.text)
 		if r != None: 

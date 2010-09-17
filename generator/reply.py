@@ -1,5 +1,13 @@
 # -*- coding:utf-8 -*-
 import random
+import os
+import sys
+exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
+conf_path = exec_path+"/common/config.json"
+common_path = exec_path+"/common/"
+sys.path.insert(0,exec_path)
+
+from pickup_reply import analyzer
 
 # 下二つのInterface
 class BaseUsers():
@@ -71,14 +79,24 @@ def pickup_same_reply(type, data):
     return sentence
 
 
-def do_reply(table, replies):
+def do_reply(table, replies, session):
     r = replies[0]
     sentence = "@" + r.user + " "
+    sentence2 = ""
     type = r.text
-    if table[type][0]:
-        sentence += pickup_same_reply(type, replies)
-    sentence += random.choice(table[type][4])
+
+    if type.startswith(u"at"):
+        sentence2 = analyzer.main(type[2:], session)
+        type = "at"
+    print "reply:",type,
+    if len(sentence2) > 0:
+        sentence += sentence2
+    else:
+        if table[type][0]:
+            sentence += pickup_same_reply(type, replies)
+        sentence += random.choice(table[type][4])
     replies.delete(r)
+    print sentence
     return sentence
 
 
@@ -87,7 +105,7 @@ def do_reply(table, replies):
 # tableはどうする？予め読み込む
 def do(table, reply, session):
     replies = AlchemyUsers(reply, session)
-    sentence = do_reply(table, replies)
+    sentence = do_reply(table, replies, session)
     session.commit()
     return sentence
 

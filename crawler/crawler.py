@@ -8,10 +8,9 @@ import os
 exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
 conf_path = exec_path+"/common/config.json"
 sys.path.insert(0,exec_path)
-from common import auth_api
+from common import auth_api, model
 
 import simplejson
-import model
 import datetime
 from   sqlalchemy import and_
 
@@ -58,14 +57,14 @@ def main():
             #if s.author.screen_name == userdata["user"]:continue
             jTime = s.created_at + datetime.timedelta(hours = 9)
             name = unicode(s.user.screen_name)
-            query = dbSession.query(model.Status).filter(
-                and_(model.Status.datetime== jTime, 
-                        model.Status.user==name ))
+            query = dbSession.query(model.Tweet).filter(
+                and_(model.Tweet.datetime== jTime, 
+                        model.Tweet.user==name ))
             if( query.count() > 0 ): continue
             if( isNGUser(name) ): continue
             update_flag = True
 
-            t = model.Status()
+            t = model.Tweet()
             t.user = name
             t.text = s.text
             t.datetime = jTime

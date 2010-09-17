@@ -11,6 +11,7 @@ def loadJSON(filename):
     f = open(filename)
     result = simplejson.loads(f.read())
     f.close()
+    #print filename
     return result
 
 def init_config(consumer_token, consumer_secret,exec_path):

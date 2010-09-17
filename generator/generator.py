@@ -10,10 +10,10 @@ sys.path.insert(0,exec_path)
 
 from common import auth_api
 from common import readReplyTable
+from common import model
 import vsearch
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
-import model
 #import scheduler
 import datetime
 #from sqlalchemy import and_
