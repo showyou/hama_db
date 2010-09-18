@@ -86,8 +86,10 @@ def do_reply(table, replies, session):
     type = r.text
 
     if type.startswith(u"at"):
-        sentence2 = analyzer.main(type[2:], session)
+        if len(type) > 2:
+            sentence2 = analyzer.main(type[2:], session)
         type = "at"
+
     print "reply:",type,
     if len(sentence2) > 0:
         sentence += sentence2
@@ -96,7 +98,6 @@ def do_reply(table, replies, session):
             sentence += pickup_same_reply(type, replies)
         sentence += random.choice(table[type][4])
     replies.delete(r)
-    print sentence
     return sentence
 
 
