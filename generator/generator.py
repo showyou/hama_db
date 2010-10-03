@@ -35,7 +35,7 @@ def generator():
     else:
         rep = dbSession.query(model.RetQueue)
         if( rep.count() > 0 ):
-            sentence = reply.do(table, rep, dbSession)
+            sentence, reply_id = reply.do(table, rep, dbSession)
         else:
             #try:
                 # 予定もreplyもないならhotでも取り出してマルコフ連鎖する
@@ -47,9 +47,10 @@ def generator():
             print_d(len(sl))
             asl = afterEffect(sl,footer)
             sentence = ""
+            reply_id = -1
             for i in asl:
                 sentence += i
-        sendMessage(sentence)
+        sendMessage(sentence, reply_id)
 
 # 文章生成後の後処理(口癖とか)
 # >>> afterEffect([u"りんご",u"は",u"青い",u"。"])
@@ -118,7 +119,7 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def sendMessage(str):
+def sendMessage(str,reply_id = -1):
     userdata = LoadUserData(conf_path)
     tw = auth_api.connect(userdata["consumer_token"],
         userdata["consumer_secret"], exec_path+"/common/")
@@ -127,7 +128,7 @@ def sendMessage(str):
     if g_debug :
         print(str)
     else:
-        tw.update_status(str)
+        tw.update_status(str, reply_id)
 
 
 def SortWordCnt(wordcnt):

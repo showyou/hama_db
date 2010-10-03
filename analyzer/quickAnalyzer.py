@@ -153,6 +153,7 @@ def CheckTime(type,timespan,x,d,session):
     if replyFlag:
         d.user = x.user
         d.text = type
+        d.reply_id = x.tweetID
         if ot == None:
             ot = model.OhayouTime()
             ot.user = d.user
@@ -180,12 +181,15 @@ def analyzeReply2(x, session, table, regexes):
                 d.user = x.user
                 text = re.sub("@\S* ","",x.text)
                 d.text = u"at"+text
+                d.reply_id = x.tweetID
             else:
                 if table[key][2] > 0:
                     CheckTime(key,datetime.timedelta(minutes=table[key][2]),x,d,session)
                 else:
                     d.user = x.user
                     d.text = key
+                    d.reply_id = x.tweetID
+
             break
     if( d.user != "" ):
         session.add(d)

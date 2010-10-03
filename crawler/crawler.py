@@ -70,7 +70,7 @@ def main():
             t.datetime = jTime
             t.replyID = s.in_reply_to_status_id
             t.tweetID = s.id
-            #print s.id
+            #print "id:",s.id, 
             dbSession.add(t)
             dbSession.commit()
 

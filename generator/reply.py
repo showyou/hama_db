@@ -64,7 +64,7 @@ class ArrayUsers(BaseUsers):
 
 
 # data = ArrayUsers or AlchemyUsers
-def pickup_same_reply(type, data):
+def pickup_same_reply(type, data, reply_id):
     sentence = ""
     l2num = 1
     print "count:", data.count()
@@ -73,10 +73,11 @@ def pickup_same_reply(type, data):
         if l2.text == type:
             sentence += "@"+l2.user + " "
             data.delete(l2)
+            reply_id = -1
         else:
             l2num += 1
         if len(sentence) > 100: break
-    return sentence
+    return sentence, reply_id
 
 
 def do_reply(table, replies, session):
@@ -94,11 +95,13 @@ def do_reply(table, replies, session):
     if len(sentence2) > 0:
         sentence += sentence2
     else:
+        reply_id = r.reply_id
+        tmp_sentence = ""
         if table[type][0]:
-            sentence += pickup_same_reply(type, replies)
-        sentence += random.choice(table[type][4])
+            tmp_sentence, reply_id = pickup_same_reply(type, replies, reply_id)
+        sentence += tmp_sentence + random.choice(table[type][4])
     replies.delete(r)
-    return sentence
+    return sentence, reply_id
 
 
 # do からdo_replyへの移行
@@ -106,7 +109,7 @@ def do_reply(table, replies, session):
 # tableはどうする？予め読み込む
 def do(table, reply, session):
     replies = AlchemyUsers(reply, session)
-    sentence = do_reply(table, replies, session)
+    sentence,reply_id = do_reply(table, replies, session)
     session.commit()
-    return sentence
+    return sentence,reply_id
 

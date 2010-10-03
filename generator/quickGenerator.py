@@ -8,11 +8,11 @@ conf_path = exec_path+"/common/config.json"
 import sys
 sys.path.insert(0,exec_path)
 
-from common import auth_api
+from common import auth_api, model
 from common import readReplyTable
 import reply
 # 解析結果に基づいて文章生成(または行動を起こす)
-import model
+#import model
 #import scheduler
 import datetime
 #from sqlalchemy import and_
@@ -33,8 +33,8 @@ def quickGenerate():
     else:
         rep = dbSession.query(model.RetQueue)
         if( rep.count() > 0 ):
-            str = reply.do(table, rep,dbSession)
-            sendMessage(str)
+            str, reply_id = reply.do(table, rep,dbSession)
+            sendMessage(str,reply_id)
 
 
 def LoadUserData(fileName):
@@ -51,14 +51,14 @@ def LoadUserData(fileName):
 
 
 # Twitterにメッセージ投げる
-def sendMessage(str):
+def sendMessage(str, reply_id):
     userdata = LoadUserData(conf_path)
     tw = auth_api.connect(userdata["consumer_token"],
         userdata["consumer_secret"], exec_path+"/common/")
     str = string.replace(str,'yystart','')
     str = string.replace(str,'yyend','')
     
-    tw.update_status(str)
+    tw.update_status(str, reply_id)
 
 
 if __name__ == "__main__":
