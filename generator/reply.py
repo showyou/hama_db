@@ -86,6 +86,7 @@ def do_reply(table, replies, session):
     sentence2 = ""
     type = r.text
 
+    reply_id = r.reply_id
     if type.startswith(u"at"):
         if len(type) > 2:
             sentence2 = analyzer.main(type[2:], session)
@@ -95,7 +96,7 @@ def do_reply(table, replies, session):
     if len(sentence2) > 0:
         sentence += sentence2
     else:
-        reply_id = r.reply_id
+
         tmp_sentence = ""
         if table[type][0]:
             tmp_sentence, reply_id = pickup_same_reply(type, replies, reply_id)
