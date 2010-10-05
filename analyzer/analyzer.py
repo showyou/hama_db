@@ -25,6 +25,8 @@ exec_path = os.path.abspath(os.path.dirname(__file__)).rsplit("/",1)[0]
 conf_path = exec_path+"/common/config.json"
 common_path = exec_path+"/common/"
 
+import sys
+sys.path.insert(0,exec_path)
 from common import model, mecab
 dbSession = None
 
@@ -43,13 +45,13 @@ def analyze():
     userdata = getAuthData(conf_path)
     dbSession = model.startSession(userdata)
     # 前回の更新時間から現在までのデータを入手する
-    q = dbSession.query(model.Twit)
+    q = dbSession.query(model.Tweet)
 
     # ToDo:ここ、1000件ずつ取って、一定件数溜まったらDBに書き込むように変えられないか？
 
     insertData = defaultdict(int)
     while(True):
-        tq = q.filter(model.Twit.isAnalyze == 1)[:1000]
+        tq = q.filter(model.Tweet.isAnalyze == 1)[:1000]
         i = 0
         if len(tq) == 0: break
         for t in tq:
@@ -63,7 +65,7 @@ def analyze():
             print len(markovWordList)
             
             #最近出た名詞貯める
-            dbSession.update(t)
+            dbSession.add(t)
             appendMarkov(markovWordList, dbSession, insertData)
             #appendCollocation(markovWordList,dbSession)
             i+= 1
@@ -112,7 +114,6 @@ def takeWordList(sarray):
                 if sa2[0] != "yystart" and sa2[0] != "yyend":
                     topNWordList.append(sa2[0])
     return markovWordList,topNWordList
-
 
 
 replacePattern = [

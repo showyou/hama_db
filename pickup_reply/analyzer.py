@@ -55,11 +55,13 @@ def pickup_reply_tweet(reply_word, word):
 def pickup_top_used_word(word_total, number):
     # word_total: [単語名:数]
     # number: 取り出す数。1なら1個。nならn個
+    if len(word_total) == 0: return ""
     sort_item= sorted(word_total.items(), key=lambda x:x[1],reverse=True)[0:number]
     if number > 1:
         l = []
         for si in sort_item:
             l.append(si[0])
+        #print "len", len(l),sort_item,number
         result = random.choice(l)
     else: result = sort_item[0][0]
     #print "result",result
@@ -138,6 +140,7 @@ def pickup_reply(input_sentence):
     
     reply_word = pickup_top_used_word(word_total,5) # 1はTop1だけ取ってくる。
                                        # 2以上ならTop2個とってあとはランダム
+    if reply_word == "": return ""
     a = word_head[reply_word]
     #print a
     if len(a) > 1:
